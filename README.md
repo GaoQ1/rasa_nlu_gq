@@ -20,7 +20,7 @@ And returning structured data like:
 
 ## Quick Install
 ```
-pip install rasa_nlu_gao
+pip install rasa-nlu-gao
 ```
 
 ## 🤖 Running of the bot
