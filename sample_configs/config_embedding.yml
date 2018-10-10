@@ -1,0 +1,28 @@
+language: en
+pipeline:
+  - name: tokenizer_whitespace
+  - name: ner_crf
+  - name: intent_featurizer_count_vectors
+    OOV_token: oov
+    token_pattern: (?u)\b\w+\b
+  - name: intent_classifier_tensorflow_embedding
+
+
+
+
+# language: en
+# pipeline:
+#   - name: "nlp_spacy"
+#   - name: "tokenizer_spacy"
+#   - name: ner_crf
+#     features: [
+#             ["low", "title", "upper"],
+#             ["bias", "low", "prefix5", "prefix2", "suffix5", "suffix3", "pos", "suffix2", "upper", "title", "digit", "pattern"],
+#             ["low", "title", "upper"]
+#         ]
+#   - name: intent_featurizer_count_vectors
+#     OOV_token: oov
+#     token_pattern: (?u)\b\w+\b
+#   - name: intent_classifier_tensorflow_embedding
+
+  
