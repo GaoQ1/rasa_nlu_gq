@@ -33,3 +33,6 @@ To run the NLU model:
 ```
 python -m rasa_nlu_gao.server -c sample_configs/config_embedding_bilstm.yml --path models
 ```
+
+## Some Examples
+具体的例子请看[rasa_chatbot_cn](https://github.com/GaoQ1/rasa_chatbot_cn)
