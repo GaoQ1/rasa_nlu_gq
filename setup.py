@@ -88,7 +88,7 @@ setup(
     keywords="nlp machine-learning machine-learning-library bot bots "
              "botkit rasa conversational-agents conversational-ai chatbot"
              "chatbot-framework bot-framework",
-    download_url="https://github.com/RasaHQ/rasa_nlu/archive/{}.tar.gz"
+    download_url="https://github.com/GaoQ1/rasa_nlu_gq/archive/{}.tar.gz"
                  "".format(__version__),
     project_urls={
         'Bug Reports': 'https://github.com/GaoQ1/rasa_nlu_gq/issues',
@@ -99,4 +99,3 @@ setup(
 print("\nWelcome to Rasa NLU!")
 print("If any questions please visit documentation "
       "page https://nlu.rasa.com")
-print("or join community chat on https://gitter.im/RasaHQ/rasa_nlu")
