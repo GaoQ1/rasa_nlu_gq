@@ -58,7 +58,7 @@ extras_requires = {
 }
 
 setup(
-    name='rasa-nlu-gq',
+    name='rasa-nlu-gao',
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     classifiers=[
         "Development Status :: 4 - Beta",

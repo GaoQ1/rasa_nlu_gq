@@ -20,16 +20,16 @@ And returning structured data like:
 
 ## Quick Install
 ```
-pip install rasa_nlu_gq
+pip install rasa_nlu_gao
 ```
 
 ## 🤖 Running of the bot
 To train the NLU model:
 ```
-python -m rasa_nlu_gq.train -c sample_configs/config_embedding_bilstm.yml --data data/examples/rasa/rasa_dataset_training.json --path models
+python -m rasa_nlu_gao.train -c sample_configs/config_embedding_bilstm.yml --data data/examples/rasa/rasa_dataset_training.json --path models
 ```
 
 To run the NLU model:
 ```
-python -m rasa_nlu_gq.server -c sample_configs/config_embedding_bilstm.yml --path models
+python -m rasa_nlu_gao.server -c sample_configs/config_embedding_bilstm.yml --path models
 ```
