@@ -31,6 +31,7 @@ out/
 tmp_training_data.json
 .DS_Store
 models/
+!rasa_nlu_gao/models
 projects/
 test_models/model_*
 test_projects/test_project_*
