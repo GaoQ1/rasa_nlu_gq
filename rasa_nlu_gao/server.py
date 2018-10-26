@@ -14,7 +14,7 @@ from klein import Klein
 from twisted.internet import reactor, threads
 from twisted.internet.defer import inlineCallbacks, returnValue
 
-from rasa_nlu import utils, config
+from rasa_nlu_gao import utils, config
 from rasa_nlu_gao.config import RasaNLUModelConfig
 from rasa_nlu_gao.data_router import (
     DataRouter, InvalidProjectError,

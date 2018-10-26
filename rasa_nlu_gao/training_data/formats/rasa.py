@@ -15,8 +15,6 @@ from rasa_nlu_gao.utils import json_to_string
 
 logger = logging.getLogger(__name__)
 
-import code
-
 class RasaReader(JsonTrainingDataReader):
     def read_from_json(self, js, **kwargs):
         """Loads training data stored in the rasa NLU data format."""
@@ -45,8 +43,6 @@ class RasaReader(JsonTrainingDataReader):
             msg = Message.build(ex['text'], ex.get("intent"),
                                 ex.get("entities"))
             training_examples.append(msg)
-
-        # code.interact(local=locals())
 
         return TrainingData(training_examples, entity_synonyms, regex_features)
 

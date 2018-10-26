@@ -27,9 +27,6 @@ from rasa_nlu_gao.utils.bilstm_utils import char_mapping, tag_mapping, prepare_d
 
 from rasa_nlu_gao.models.model import Model
 
-
-import code
-
 logger = logging.getLogger(__name__)
 
 if typing.TYPE_CHECKING:

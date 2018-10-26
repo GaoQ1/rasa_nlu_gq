@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import argparse
 
-from rasa_nlu import training_data
+from rasa_nlu_gao import training_data
 from rasa_nlu_gao.utils import write_to_file
 
 

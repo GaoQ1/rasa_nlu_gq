@@ -16,8 +16,6 @@ from rasa_nlu_gao.model import Metadata
 from rasa_nlu_gao.training_data import Message
 from rasa_nlu_gao.training_data import TrainingData
 
-import code
-
 try:
     import spacy
 except ImportError:
@@ -143,16 +141,15 @@ class CRFEntityExtractor(EntityExtractor):
             # this will train on ALL examples, even the ones
             # without annotations
             dataset = self._create_dataset(filtered_entity_examples)
-            
+
             self._train_model(dataset)
 
     def _create_dataset(self, examples):
         # type: (List[Message]) -> List[List[Tuple[Text, Text, Text, Text]]]
         dataset = []
         for example in examples:
-
             entity_offsets = self._convert_example(example)
-
+            
             dataset.append(self._from_json_to_crf(example, entity_offsets))
         return dataset
 
@@ -464,6 +461,7 @@ class CRFEntityExtractor(EntityExtractor):
             ents = [l[5] for l in gold.orig_annot]
         else:
             tokens = message.get("tokens") # token是切词完之后的list
+
             ents = self._bilou_tags_from_offsets(tokens, entity_offsets)
         
         if '-' in ents:
@@ -558,8 +556,6 @@ class CRFEntityExtractor(EntityExtractor):
 
         X_train = [self._sentence_to_features(sent) for sent in df_train]
         y_train = [self._sentence_to_labels(sent) for sent in df_train]
-
-        # code.interact(local=locals())
 
         self.ent_tagger = sklearn_crfsuite.CRF(
                 algorithm='lbfgs',

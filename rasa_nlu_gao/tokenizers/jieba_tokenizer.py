@@ -78,6 +78,7 @@ class JiebaTokenizer(Tokenizer, Component):
             self.load_custom_dictionary(self.dictionary_path)
 
         tokenized = jieba.tokenize(text)
+
         tokens = [Token(word, start) for (word, start, end) in tokenized]
         return tokens
 

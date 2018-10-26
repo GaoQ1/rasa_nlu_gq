@@ -15,8 +15,8 @@ from typing import List
 from typing import Optional
 from typing import Text
 
-import rasa_nlu
-from rasa_nlu import components, utils, config
+import rasa_nlu_gao
+from rasa_nlu_gao import components, utils, config
 from rasa_nlu_gao.components import Component, ComponentBuilder
 from rasa_nlu_gao.config import RasaNLUModelConfig, override_defaults
 from rasa_nlu_gao.persistor import Persistor

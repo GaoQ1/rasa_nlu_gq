@@ -12,7 +12,7 @@ import logging
 from builtins import object
 from threading import Lock
 
-from rasa_nlu import utils
+from rasa_nlu_gao import utils
 from typing import Text, List
 
 from rasa_nlu_gao.classifiers.keyword_intent_classifier import \

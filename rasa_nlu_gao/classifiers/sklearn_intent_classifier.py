@@ -17,7 +17,7 @@ from typing import Tuple
 
 import numpy as np
 
-from rasa_nlu import utils
+from rasa_nlu_gao import utils
 from rasa_nlu_gao.classifiers import INTENT_RANKING_LENGTH
 from rasa_nlu_gao.components import Component
 from rasa_nlu_gao.config import RasaNLUModelConfig

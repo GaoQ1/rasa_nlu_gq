@@ -13,7 +13,7 @@ from collections import namedtuple
 import numpy as np
 import json
 
-from rasa_nlu import training_data, utils, config
+from rasa_nlu_gao import training_data, utils, config
 from rasa_nlu_gao.config import RasaNLUModelConfig
 from rasa_nlu_gao.model import Interpreter
 from rasa_nlu_gao.model import Trainer, TrainingData

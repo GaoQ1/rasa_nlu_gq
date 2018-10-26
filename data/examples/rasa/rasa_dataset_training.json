@@ -1,8 +1,34 @@
 {
     "rasa_nlu_data": {
         "regex_features": [],
-        "entity_synonyms": [],
+        "entity_synonyms": [
+            {
+                "value": "消费",
+                "synonyms": [
+                    "话费",
+                    "钱"
+                ]
+            }
+        ],
         "common_examples": [
+            {
+                "text": "帮我查一下宋智孝的流量有多少。",
+                "intent": "request_search",
+                "entities": [
+                    {
+                        "start": 9,
+                        "end": 11,
+                        "value": "流量",
+                        "entity": "item"
+                    },
+                    {
+                        "start": 11,
+                        "end": 14,
+                        "value": "有多少",
+                        "entity": "other"
+                    }
+                ]
+            },
             {
                 "text": "帮我查一下我的流量有多少。",
                 "intent": "request_search",
@@ -16,7 +42,7 @@
                     {
                         "start": 9,
                         "end": 11,
-                        "value": "有什么",
+                        "value": "有多少",
                         "entity": "other"
                     }
                 ]

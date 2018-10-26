@@ -13,7 +13,7 @@ from builtins import object
 # Describes where to search for the config file if no location is specified
 from typing import Text, Optional, Dict, Any, List
 
-from rasa_nlu import utils
+from rasa_nlu_gao import utils
 from rasa_nlu_gao.utils import json_to_string
 
 DEFAULT_CONFIG_LOCATION = "config.yml"
@@ -103,7 +103,7 @@ class RasaNLUModelConfig(object):
         self.override(configuration_values)
 
         if isinstance(self.__dict__['pipeline'], six.string_types):
-            from rasa_nlu import registry
+            from rasa_nlu_gao import registry
 
             template_name = self.__dict__['pipeline']
             pipeline = registry.pipeline_template(template_name)

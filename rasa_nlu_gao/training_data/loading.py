@@ -9,7 +9,7 @@ import logging
 import requests
 from typing import Text, Optional
 
-from rasa_nlu import utils
+from rasa_nlu_gao import utils
 from rasa_nlu_gao.training_data import TrainingData
 from rasa_nlu_gao.training_data.formats import (
     MarkdownReader, WitReader, LuisReader,
@@ -20,8 +20,6 @@ from rasa_nlu_gao.training_data.formats.dialogflow import (
     DIALOGFLOW_ENTITIES, DIALOGFLOW_ENTITY_ENTRIES, DIALOGFLOW_INTENT_EXAMPLES)
 
 logger = logging.getLogger(__name__)
-
-import code
 
 # Different supported file formats and their identifier
 WIT = "wit"

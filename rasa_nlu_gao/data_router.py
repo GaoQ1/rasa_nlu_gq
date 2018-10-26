@@ -15,7 +15,7 @@ from concurrent.futures import ProcessPoolExecutor as ProcessPool
 from future.utils import PY3
 from rasa_nlu_gao.training_data import Message
 
-from rasa_nlu import utils, config
+from rasa_nlu_gao import utils, config
 from rasa_nlu_gao.components import ComponentBuilder
 from rasa_nlu_gao.config import RasaNLUModelConfig
 from rasa_nlu_gao.evaluate import get_evaluation_metrics, clean_intent_labels

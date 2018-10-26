@@ -16,7 +16,7 @@ from typing import Text
 from typing import Tuple
 from typing import Hashable
 
-from rasa_nlu import config
+from rasa_nlu_gao import config
 from rasa_nlu_gao.config import RasaNLUModelConfig
 from rasa_nlu_gao.training_data import Message
 
@@ -46,7 +46,7 @@ def validate_requirements(component_names):
     # type: (List[Text], Text) -> None
     """Ensures that all required python packages are installed to
     instantiate and used the passed components."""
-    from rasa_nlu import registry
+    from rasa_nlu_gao import registry
 
     # Validate that all required packages are installed
     failed_imports = set()
@@ -369,7 +369,7 @@ class ComponentBuilder(object):
         """Load a component from the cache, if it exists.
 
         Returns the component, if found, and the cache key."""
-        from rasa_nlu import registry
+        from rasa_nlu_gao import registry
         from rasa_nlu_gao.model import Metadata
 
         component_class = registry.get_component_class(component_name)
@@ -408,7 +408,7 @@ class ComponentBuilder(object):
         Returns:
             Component: the loaded component.
         """
-        from rasa_nlu import registry
+        from rasa_nlu_gao import registry
         from rasa_nlu_gao.model import Metadata
 
         try:
@@ -430,7 +430,7 @@ class ComponentBuilder(object):
         # type: (Text, RasaNLUModelConfig) -> Component
         """Tries to retrieve a component from the cache,
         calls `create` to create a new component."""
-        from rasa_nlu import registry
+        from rasa_nlu_gao import registry
         from rasa_nlu_gao.model import Metadata
 
         try:

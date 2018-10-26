@@ -9,7 +9,7 @@ from __future__ import division
 from __future__ import absolute_import
 
 import typing
-from rasa_nlu import utils
+from rasa_nlu_gao import utils
 from typing import Any
 from typing import Optional
 from typing import Text
@@ -30,15 +30,15 @@ from rasa_nlu_gao.extractors.spacy_entity_extractor import SpacyEntityExtractor
 from rasa_nlu_gao.extractors.crf_entity_extractor import CRFEntityExtractor
 
 
-from rasa_nlu_gao.extractors.bilstm_crf_entity_extractor import BilstmCRFEntityExtractor  # TODO
+from rasa_nlu_gao.extractors.bilstm_crf_entity_extractor import BilstmCRFEntityExtractor # customize
+from rasa_nlu_gao.extractors.jieba_pseg_extractor import JiebaPsegExtractor  # customize
 
 
 from rasa_nlu_gao.featurizers.mitie_featurizer import MitieFeaturizer
 from rasa_nlu_gao.featurizers.ngram_featurizer import NGramFeaturizer
 from rasa_nlu_gao.featurizers.regex_featurizer import RegexFeaturizer
 from rasa_nlu_gao.featurizers.spacy_featurizer import SpacyFeaturizer
-from rasa_nlu_gao.featurizers.count_vectors_featurizer import \
-    CountVectorsFeaturizer
+from rasa_nlu_gao.featurizers.count_vectors_featurizer import CountVectorsFeaturizer
 from rasa_nlu_gao.model import Metadata
 from rasa_nlu_gao.tokenizers.mitie_tokenizer import MitieTokenizer
 from rasa_nlu_gao.tokenizers.spacy_tokenizer import SpacyTokenizer
@@ -57,7 +57,8 @@ component_classes = [
     SpacyNLP, MitieNLP,
     SpacyEntityExtractor, MitieEntityExtractor, DucklingExtractor,
     CRFEntityExtractor, DucklingHTTPExtractor,
-    BilstmCRFEntityExtractor, # TODO
+    BilstmCRFEntityExtractor, # customize
+    JiebaPsegExtractor, # customize
     EntitySynonymMapper,
     SpacyFeaturizer, MitieFeaturizer, NGramFeaturizer, RegexFeaturizer,
     CountVectorsFeaturizer,

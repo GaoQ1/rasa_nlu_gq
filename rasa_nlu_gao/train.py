@@ -11,15 +11,13 @@ from typing import Optional, Any
 from typing import Text
 from typing import Tuple
 
-from rasa_nlu import utils, config
+from rasa_nlu_gao import utils, config
 from rasa_nlu_gao.components import ComponentBuilder
 from rasa_nlu_gao.config import RasaNLUModelConfig
 from rasa_nlu_gao.model import Interpreter
 from rasa_nlu_gao.model import Trainer
 from rasa_nlu_gao.training_data import load_data
 from rasa_nlu_gao.training_data.loading import load_data_from_url
-
-import code
 
 logger = logging.getLogger(__name__)
 

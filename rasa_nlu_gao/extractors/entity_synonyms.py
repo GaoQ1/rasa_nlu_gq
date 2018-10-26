@@ -12,7 +12,7 @@ from typing import Dict
 from typing import Optional
 from typing import Text
 
-from rasa_nlu import utils
+from rasa_nlu_gao import utils
 from rasa_nlu_gao.extractors import EntityExtractor
 from rasa_nlu_gao.model import Metadata
 from rasa_nlu_gao.training_data import Message
@@ -43,6 +43,7 @@ class EntitySynonymMapper(EntityExtractor):
         for example in training_data.entity_examples:
             for entity in example.get("entities", []):
                 entity_val = example.text[entity["start"]:entity["end"]]
+
                 self.add_entities_if_synonyms(entity_val,
                                               str(entity.get("value")))
 

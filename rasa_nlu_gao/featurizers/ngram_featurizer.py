@@ -16,7 +16,7 @@ from builtins import map
 from builtins import range
 from typing import Any, Dict, List, Optional, Text
 
-from rasa_nlu import utils
+from rasa_nlu_gao import utils
 from rasa_nlu_gao.config import RasaNLUModelConfig
 from rasa_nlu_gao.featurizers import Featurizer
 from rasa_nlu_gao.training_data import Message
