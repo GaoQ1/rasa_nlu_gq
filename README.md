@@ -13,10 +13,49 @@ And returning structured data like:
 ```
 
 ## Intent of this project
-这个项目的目的和初衷，是由于官方的rasa nlu里面提供的components和models有点out of time，并且精确率有时候不是很乐观。所以我自定义了几个基于tensorflow的能够兼容rasa框架的models，而为什么不直接提个pr到rasa nlu呢，因为要写太多test我懒癌犯了。所以在我自己的github上开源并发布到Pypi上，这样后续也能不断往里面填充和优化模型，方便别人也方便自己。
+这个项目的目的和初衷，是由于官方的rasa nlu里面提供的components和models并不能满足实际需求，有些models精确度不是很乐观。所以我自定义了几个components，而为什么不直接提个pr到rasa nlu官网呢，因为要写太多test。所以在我自己的github上开源并发布到Pypi上，这样后续也能不断往里面填充和优化模型，方便别人也方便自己。
 
-## New models
-这里新增的models主要是做实体识别的模型，主要有两个一个是bilstm+crf，一个是idcnn+crf膨胀卷积模型
+## New features
+目前新增了两个特性，支持版本为rasa-nlu-gao==v0.1.2
+ - 新增了实体识别的模型，一个是bilstm+crf，一个是idcnn+crf膨胀卷积模型，对应的yml文件配置如下：
+ ```
+  language: "zh"
+
+  pipeline:
+    - name: "tokenizer_jieba"
+
+    - name: "intent_featurizer_count_vectors"
+      token_pattern: '(?u)\b\w+\b'
+    - name: "intent_classifier_tensorflow_embedding"
+
+    - name: "ner_bilstm_crf"
+      lr: 0.001
+      char_dim: 100
+      lstm_dim: 100
+      batches_per_epoch: 10
+      seg_dim: 20
+      num_segs: 4
+      batch_size: 200
+      tag_schema: "iobes"
+      model_type: "bilstm" # 模型支持两种idcnn膨胀卷积模型或bilstm双向lstm模型
+      clip: 5
+      optimizer: "adam"
+      dropout_keep: 0.5
+      steps_check: 100
+ ```
+ - 新增了jieba词性标注的模块，可以方便识别名字，地名，机构名等等jieba能够支持的词性，对应的yml文件配置如下：
+ ```
+  language: "zh"
+
+  pipeline:
+  - name: "tokenizer_jieba"
+  - name: "ner_crf"
+  - name: "jieba_pseg_extractor"
+  - name: "intent_featurizer_count_vectors"
+    OOV_token: oov
+    token_pattern: '(?u)\b\w+\b'
+  - name: "intent_classifier_tensorflow_embedding"
+ ```
 
 ## Quick Install
 ```
