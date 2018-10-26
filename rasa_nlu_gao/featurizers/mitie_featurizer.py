@@ -9,11 +9,11 @@ from typing import Any
 from typing import List
 from typing import Text
 
-from rasa_nlu.config import RasaNLUModelConfig
-from rasa_nlu.featurizers import Featurizer
-from rasa_nlu.tokenizers import Token
-from rasa_nlu.training_data import Message
-from rasa_nlu.training_data import TrainingData
+from rasa_nlu_gao.config import RasaNLUModelConfig
+from rasa_nlu_gao.featurizers import Featurizer
+from rasa_nlu_gao.tokenizers import Token
+from rasa_nlu_gao.training_data import Message
+from rasa_nlu_gao.training_data import TrainingData
 
 if typing.TYPE_CHECKING:
     import mitie

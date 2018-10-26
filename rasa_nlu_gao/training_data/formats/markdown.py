@@ -6,11 +6,11 @@ from __future__ import unicode_literals
 import re
 import logging
 
-from rasa_nlu.training_data import Message, TrainingData
-from rasa_nlu.training_data.util import check_duplicate_synonym
-from rasa_nlu.utils import build_entity
+from rasa_nlu_gao.training_data import Message, TrainingData
+from rasa_nlu_gao.training_data.util import check_duplicate_synonym
+from rasa_nlu_gao.utils import build_entity
 
-from rasa_nlu.training_data.formats.readerwriter import TrainingDataReader, TrainingDataWriter
+from rasa_nlu_gao.training_data.formats.readerwriter import TrainingDataReader, TrainingDataWriter
 
 INTENT = "intent"
 SYNONYM = "synonym"

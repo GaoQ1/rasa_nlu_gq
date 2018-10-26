@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import numpy as np
 
-from rasa_nlu.components import Component
+from rasa_nlu_gao.components import Component
 
 
 class Featurizer(Component):

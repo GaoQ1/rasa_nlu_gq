@@ -11,12 +11,12 @@ from typing import List
 from typing import Text
 from typing import Tuple
 
-from rasa_nlu.config import RasaNLUModelConfig
-from rasa_nlu.tokenizers import Token
-from rasa_nlu.tokenizers import Tokenizer
-from rasa_nlu.components import Component
-from rasa_nlu.training_data import Message
-from rasa_nlu.training_data import TrainingData
+from rasa_nlu_gao.config import RasaNLUModelConfig
+from rasa_nlu_gao.tokenizers import Token
+from rasa_nlu_gao.tokenizers import Tokenizer
+from rasa_nlu_gao.components import Component
+from rasa_nlu_gao.training_data import Message
+from rasa_nlu_gao.training_data import TrainingData
 
 
 class MitieTokenizer(Tokenizer, Component):

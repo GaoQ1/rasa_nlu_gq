@@ -11,7 +11,7 @@ import warnings
 
 from copy import deepcopy
 from builtins import object, str
-from rasa_nlu.training_data import Message
+from rasa_nlu_gao.training_data import Message
 
 from typing import Any
 from typing import Dict
@@ -22,9 +22,9 @@ from typing import Text
 from collections import Counter
 import random
 
-from rasa_nlu.utils import lazyproperty, write_to_file
-from rasa_nlu.utils import list_to_str
-from rasa_nlu.training_data.util import check_duplicate_synonym
+from rasa_nlu_gao.utils import lazyproperty, write_to_file
+from rasa_nlu_gao.utils import list_to_str
+from rasa_nlu_gao.training_data.util import check_duplicate_synonym
 
 logger = logging.getLogger(__name__)
 
@@ -130,13 +130,13 @@ class TrainingData(object):
     def as_json(self, **kwargs):
         # type: (**Any) -> str
         """Represent this set of training examples as json."""
-        from rasa_nlu.training_data.formats import RasaWriter
+        from rasa_nlu_gao.training_data.formats import RasaWriter
         return RasaWriter().dumps(self)
 
     def as_markdown(self):
         # type: () -> str
         """Generates the markdown representation of the TrainingData."""
-        from rasa_nlu.training_data.formats import MarkdownWriter
+        from rasa_nlu_gao.training_data.formats import MarkdownWriter
         return MarkdownWriter().dumps(self)
 
     def persist(self, dir_name):

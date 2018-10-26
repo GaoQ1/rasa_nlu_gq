@@ -8,10 +8,10 @@ import logging
 import os
 import shutil
 
-from rasa_nlu.components import Component
-from rasa_nlu.config import RasaNLUModelConfig
-from rasa_nlu.tokenizers import Tokenizer, Token
-from rasa_nlu.training_data import Message, TrainingData
+from rasa_nlu_gao.components import Component
+from rasa_nlu_gao.config import RasaNLUModelConfig
+from rasa_nlu_gao.tokenizers import Tokenizer, Token
+from rasa_nlu_gao.training_data import Message, TrainingData
 from typing import Any, List, Text
 
 logger = logging.getLogger(__name__)

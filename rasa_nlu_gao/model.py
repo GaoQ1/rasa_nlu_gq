@@ -17,11 +17,11 @@ from typing import Text
 
 import rasa_nlu
 from rasa_nlu import components, utils, config
-from rasa_nlu.components import Component, ComponentBuilder
-from rasa_nlu.config import RasaNLUModelConfig, override_defaults
-from rasa_nlu.persistor import Persistor
-from rasa_nlu.training_data import TrainingData, Message
-from rasa_nlu.utils import create_dir, write_json_to_file
+from rasa_nlu_gao.components import Component, ComponentBuilder
+from rasa_nlu_gao.config import RasaNLUModelConfig, override_defaults
+from rasa_nlu_gao.persistor import Persistor
+from rasa_nlu_gao.training_data import TrainingData, Message
+from rasa_nlu_gao.utils import create_dir, write_json_to_file
 
 logger = logging.getLogger(__name__)
 
@@ -114,7 +114,7 @@ class Metadata(object):
 
         metadata.update({
             "trained_at": datetime.datetime.now().strftime('%Y%m%d-%H%M%S'),
-            "rasa_nlu_version": rasa_nlu.__version__,
+            "rasa_nlu_version": rasa_nlu_gao.__version__,
         })
 
         filename = os.path.join(model_dir, 'metadata.json')
@@ -270,7 +270,7 @@ class Interpreter(object):
                 "Either retrain the model, or run with"
                 "an older version. "
                 "Model version: {} Instance version: {}"
-                "".format(model_version, rasa_nlu.__version__))
+                "".format(model_version, rasa_nlu_gao.__version__))
 
     @staticmethod
     def load(model_dir, component_builder=None, skip_validation=False):

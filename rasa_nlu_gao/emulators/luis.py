@@ -7,7 +7,7 @@ from typing import Any
 from typing import Dict
 from typing import Text
 
-from rasa_nlu.emulators import NoEmulator
+from rasa_nlu_gao.emulators import NoEmulator
 
 
 class LUISEmulator(NoEmulator):

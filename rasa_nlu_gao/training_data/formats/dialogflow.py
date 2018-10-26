@@ -6,10 +6,10 @@ from __future__ import unicode_literals
 import logging
 import os
 
-from rasa_nlu.training_data import Message, TrainingData
-from rasa_nlu.training_data.formats.readerwriter import TrainingDataReader
+from rasa_nlu_gao.training_data import Message, TrainingData
+from rasa_nlu_gao.training_data.formats.readerwriter import TrainingDataReader
 from rasa_nlu import utils
-from rasa_nlu.training_data.util import transform_entity_synonyms
+from rasa_nlu_gao.training_data.util import transform_entity_synonyms
 
 logger = logging.getLogger(__name__)
 

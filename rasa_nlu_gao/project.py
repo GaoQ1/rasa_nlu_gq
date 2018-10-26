@@ -15,9 +15,9 @@ from threading import Lock
 from rasa_nlu import utils
 from typing import Text, List
 
-from rasa_nlu.classifiers.keyword_intent_classifier import \
+from rasa_nlu_gao.classifiers.keyword_intent_classifier import \
     KeywordIntentClassifier
-from rasa_nlu.model import Metadata, Interpreter
+from rasa_nlu_gao.model import Metadata, Interpreter
 
 logger = logging.getLogger(__name__)
 
@@ -230,7 +230,7 @@ class Project(object):
         # type: () -> List[Text]
 
         try:
-            from rasa_nlu.persistor import get_persistor
+            from rasa_nlu_gao.persistor import get_persistor
             p = get_persistor(self.remote_storage)
             if p is not None:
                 return p.list_models(self._project)
@@ -243,7 +243,7 @@ class Project(object):
 
     def _load_model_from_cloud(self, model_name, target_path):
         try:
-            from rasa_nlu.persistor import get_persistor
+            from rasa_nlu_gao.persistor import get_persistor
             p = get_persistor(self.remote_storage)
             if p is not None:
                 p.retrieve(model_name, self._project, target_path)

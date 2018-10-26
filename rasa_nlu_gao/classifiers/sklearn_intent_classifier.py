@@ -18,12 +18,12 @@ from typing import Tuple
 import numpy as np
 
 from rasa_nlu import utils
-from rasa_nlu.classifiers import INTENT_RANKING_LENGTH
-from rasa_nlu.components import Component
-from rasa_nlu.config import RasaNLUModelConfig
-from rasa_nlu.model import Metadata
-from rasa_nlu.training_data import Message
-from rasa_nlu.training_data import TrainingData
+from rasa_nlu_gao.classifiers import INTENT_RANKING_LENGTH
+from rasa_nlu_gao.components import Component
+from rasa_nlu_gao.config import RasaNLUModelConfig
+from rasa_nlu_gao.model import Metadata
+from rasa_nlu_gao.training_data import Message
+from rasa_nlu_gao.training_data import TrainingData
 
 logger = logging.getLogger(__name__)
 

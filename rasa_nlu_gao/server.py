@@ -15,14 +15,14 @@ from twisted.internet import reactor, threads
 from twisted.internet.defer import inlineCallbacks, returnValue
 
 from rasa_nlu import utils, config
-from rasa_nlu.config import RasaNLUModelConfig
-from rasa_nlu.data_router import (
+from rasa_nlu_gao.config import RasaNLUModelConfig
+from rasa_nlu_gao.data_router import (
     DataRouter, InvalidProjectError,
     MaxTrainingError)
-from rasa_nlu.train import TrainingException
-from rasa_nlu.utils import json_to_string
-from rasa_nlu.version import __version__
-from rasa_nlu.model import MINIMUM_COMPATIBLE_VERSION
+from rasa_nlu_gao.train import TrainingException
+from rasa_nlu_gao.utils import json_to_string
+from rasa_nlu_gao.version import __version__
+from rasa_nlu_gao.model import MINIMUM_COMPATIBLE_VERSION
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +45,7 @@ def create_argument_parser():
                              'server. \nIf given `all` as input all the models '
                              'will be loaded.\nElse you can specify a list of '
                              'specific project names.\nEg: python -m '
-                             'rasa_nlu.server --pre_load project1 --path projects '
+                             'rasa_nlu_gao.server --pre_load project1 --path projects '
                              '-c config.yaml')
     parser.add_argument('-t', '--token',
                         help="auth token. If set, reject requests which don't "

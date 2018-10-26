@@ -13,9 +13,9 @@ from typing import List
 from typing import Optional
 from typing import Text
 
-from rasa_nlu.components import Component
-from rasa_nlu.config import RasaNLUModelConfig
-from rasa_nlu.model import Metadata
+from rasa_nlu_gao.components import Component
+from rasa_nlu_gao.config import RasaNLUModelConfig
+from rasa_nlu_gao.model import Metadata
 
 if typing.TYPE_CHECKING:
     import mitie

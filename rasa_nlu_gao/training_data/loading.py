@@ -10,12 +10,12 @@ import requests
 from typing import Text, Optional
 
 from rasa_nlu import utils
-from rasa_nlu.training_data import TrainingData
-from rasa_nlu.training_data.formats import (
+from rasa_nlu_gao.training_data import TrainingData
+from rasa_nlu_gao.training_data.formats import (
     MarkdownReader, WitReader, LuisReader,
     RasaReader, DialogflowReader)
-from rasa_nlu.training_data.formats import markdown
-from rasa_nlu.training_data.formats.dialogflow import (
+from rasa_nlu_gao.training_data.formats import markdown
+from rasa_nlu_gao.training_data.formats.dialogflow import (
     DIALOGFLOW_AGENT, DIALOGFLOW_PACKAGE, DIALOGFLOW_INTENT,
     DIALOGFLOW_ENTITIES, DIALOGFLOW_ENTITY_ENTRIES, DIALOGFLOW_INTENT_EXAMPLES)
 

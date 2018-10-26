@@ -11,7 +11,7 @@ from typing import Dict
 from typing import Text
 from typing import List
 
-from rasa_nlu.emulators import NoEmulator
+from rasa_nlu_gao.emulators import NoEmulator
 
 
 class DialogflowEmulator(NoEmulator):

@@ -6,11 +6,11 @@ from __future__ import unicode_literals
 import re
 from typing import Any, List, Text
 
-from rasa_nlu.components import Component
-from rasa_nlu.config import RasaNLUModelConfig
-from rasa_nlu.tokenizers import Tokenizer, Token
-from rasa_nlu.training_data import Message
-from rasa_nlu.training_data import TrainingData
+from rasa_nlu_gao.components import Component
+from rasa_nlu_gao.config import RasaNLUModelConfig
+from rasa_nlu_gao.tokenizers import Tokenizer, Token
+from rasa_nlu_gao.training_data import Message
+from rasa_nlu_gao.training_data import TrainingData
 
 
 class WhitespaceTokenizer(Tokenizer, Component):

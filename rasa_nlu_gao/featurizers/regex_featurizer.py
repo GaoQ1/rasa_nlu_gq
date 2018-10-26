@@ -12,17 +12,17 @@ import typing
 from typing import Any, Dict, List, Optional, Text
 
 from rasa_nlu import utils
-from rasa_nlu.config import RasaNLUModelConfig
-from rasa_nlu.featurizers import Featurizer
-from rasa_nlu.training_data import Message
-from rasa_nlu.training_data import TrainingData
+from rasa_nlu_gao.config import RasaNLUModelConfig
+from rasa_nlu_gao.featurizers import Featurizer
+from rasa_nlu_gao.training_data import Message
+from rasa_nlu_gao.training_data import TrainingData
 
 import numpy as np
 
 logger = logging.getLogger(__name__)
 
 if typing.TYPE_CHECKING:
-    from rasa_nlu.model import Metadata
+    from rasa_nlu_gao.model import Metadata
 
 
 REGEX_FEATURIZER_FILE_NAME = "regex_featurizer.json"

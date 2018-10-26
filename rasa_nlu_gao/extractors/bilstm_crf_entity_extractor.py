@@ -19,13 +19,13 @@ except ImportError:
 from builtins import str
 from typing import Any, Dict, List, Optional, Text, Tuple
 
-from rasa_nlu.extractors import EntityExtractor
-from rasa_nlu.model import Metadata
-from rasa_nlu.training_data import Message
+from rasa_nlu_gao.extractors import EntityExtractor
+from rasa_nlu_gao.model import Metadata
+from rasa_nlu_gao.training_data import Message
 
-from rasa_nlu.utils.bilstm_utils import char_mapping, tag_mapping, prepare_dataset, BatchManager, iob_iobes, iob2, save_model, create_model, input_from_line
+from rasa_nlu_gao.utils.bilstm_utils import char_mapping, tag_mapping, prepare_dataset, BatchManager, iob_iobes, iob2, save_model, create_model, input_from_line
 
-from rasa_nlu.models.model import Model
+from rasa_nlu_gao.models.model import Model
 
 
 import code

@@ -5,8 +5,8 @@ from tensorflow.contrib.crf import viterbi_decode
 from tensorflow.contrib.layers.python.layers import initializers
 from tensorflow.contrib import rnn
 
-from rasa_nlu.utils.bilstm_utils import result_to_json
-from rasa_nlu.utils.bilstm_utils import iobes_iob, iob_iobes
+from rasa_nlu_gao.utils.bilstm_utils import result_to_json
+from rasa_nlu_gao.utils.bilstm_utils import iobes_iob, iob_iobes
 
 class Model(object):
 

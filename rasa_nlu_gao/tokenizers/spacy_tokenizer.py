@@ -6,11 +6,11 @@ from __future__ import unicode_literals
 import typing
 from typing import Any, List
 
-from rasa_nlu.components import Component
-from rasa_nlu.config import RasaNLUModelConfig
-from rasa_nlu.tokenizers import Tokenizer, Token
-from rasa_nlu.training_data import Message
-from rasa_nlu.training_data import TrainingData
+from rasa_nlu_gao.components import Component
+from rasa_nlu_gao.config import RasaNLUModelConfig
+from rasa_nlu_gao.tokenizers import Tokenizer, Token
+from rasa_nlu_gao.training_data import Message
+from rasa_nlu_gao.training_data import TrainingData
 
 if typing.TYPE_CHECKING:
     from spacy.tokens.doc import Doc

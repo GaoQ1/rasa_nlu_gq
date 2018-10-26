@@ -17,12 +17,12 @@ from typing import Tuple
 from typing import Hashable
 
 from rasa_nlu import config
-from rasa_nlu.config import RasaNLUModelConfig
-from rasa_nlu.training_data import Message
+from rasa_nlu_gao.config import RasaNLUModelConfig
+from rasa_nlu_gao.training_data import Message
 
 if typing.TYPE_CHECKING:
-    from rasa_nlu.training_data import TrainingData
-    from rasa_nlu.model import Metadata
+    from rasa_nlu_gao.training_data import TrainingData
+    from rasa_nlu_gao.model import Metadata
 
 logger = logging.getLogger(__name__)
 
@@ -370,7 +370,7 @@ class ComponentBuilder(object):
 
         Returns the component, if found, and the cache key."""
         from rasa_nlu import registry
-        from rasa_nlu.model import Metadata
+        from rasa_nlu_gao.model import Metadata
 
         component_class = registry.get_component_class(component_name)
         cache_key = component_class.cache_key(model_metadata)
@@ -403,13 +403,13 @@ class ComponentBuilder(object):
             component_name (str): the name of the component to load
             model_dir (str): the directory to read the model from
             model_metadata (Metadata): the model's
-            :class:`rasa_nlu.models.Metadata`
+            :class:`rasa_nlu_gao.models.Metadata`
 
         Returns:
             Component: the loaded component.
         """
         from rasa_nlu import registry
-        from rasa_nlu.model import Metadata
+        from rasa_nlu_gao.model import Metadata
 
         try:
             cached_component, cache_key = self.__get_cached_component(
@@ -431,7 +431,7 @@ class ComponentBuilder(object):
         """Tries to retrieve a component from the cache,
         calls `create` to create a new component."""
         from rasa_nlu import registry
-        from rasa_nlu.model import Metadata
+        from rasa_nlu_gao.model import Metadata
 
         try:
             component, cache_key = self.__get_cached_component(

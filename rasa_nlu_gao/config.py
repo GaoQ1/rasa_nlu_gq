@@ -14,7 +14,7 @@ from builtins import object
 from typing import Text, Optional, Dict, Any, List
 
 from rasa_nlu import utils
-from rasa_nlu.utils import json_to_string
+from rasa_nlu_gao.utils import json_to_string
 
 DEFAULT_CONFIG_LOCATION = "config.yml"
 

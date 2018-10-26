@@ -9,8 +9,8 @@ from typing import Dict
 from typing import List
 from typing import Text
 
-from rasa_nlu.extractors import EntityExtractor
-from rasa_nlu.training_data import Message
+from rasa_nlu_gao.extractors import EntityExtractor
+from rasa_nlu_gao.training_data import Message
 
 if typing.TYPE_CHECKING:
     from spacy.tokens.doc import Doc

@@ -14,7 +14,7 @@ import botocore
 from builtins import object
 from typing import Optional, Tuple, List, Text
 
-from rasa_nlu.config import RasaNLUModelConfig
+from rasa_nlu_gao.config import RasaNLUModelConfig
 
 logger = logging.getLogger(__name__)
 

@@ -14,11 +14,11 @@ from typing import List
 from typing import Optional
 from typing import Text
 
-from rasa_nlu.config import RasaNLUModelConfig
-from rasa_nlu.extractors import EntityExtractor
-from rasa_nlu.model import Metadata
-from rasa_nlu.training_data import Message
-from rasa_nlu.training_data import TrainingData
+from rasa_nlu_gao.config import RasaNLUModelConfig
+from rasa_nlu_gao.extractors import EntityExtractor
+from rasa_nlu_gao.model import Metadata
+from rasa_nlu_gao.training_data import Message
+from rasa_nlu_gao.training_data import TrainingData
 
 logger = logging.getLogger(__name__)
 
