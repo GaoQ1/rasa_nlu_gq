@@ -51,6 +51,7 @@ And returning structured data like:
   - name: "tokenizer_jieba"
   - name: "ner_crf"
   - name: "jieba_pseg_extractor"
+    part_of_speech: ["nr", "ns", "nt"]
   - name: "intent_featurizer_count_vectors"
     OOV_token: oov
     token_pattern: '(?u)\b\w+\b'
