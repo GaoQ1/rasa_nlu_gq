@@ -18,7 +18,6 @@ from rasa_nlu_gao.model import Metadata
 
 logger = logging.getLogger(__name__)
 
-
 class CountVectorsFeaturizer(Featurizer):
     """Bag of words featurizer
 
