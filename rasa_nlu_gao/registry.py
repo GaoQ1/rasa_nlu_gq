@@ -34,6 +34,8 @@ from rasa_nlu_gao.extractors.bilstm_crf_entity_extractor import BilstmCRFEntityE
 from rasa_nlu_gao.extractors.jieba_pseg_extractor import JiebaPsegExtractor  # customize
 from rasa_nlu_gao.classifiers.entity_edit_intent import EntityEditIntent  # customize
 
+from rasa_nlu_gao.featurizers.intent_featurizer_wordvector import WordVectorsFeaturizer  # customize
+
 
 from rasa_nlu_gao.featurizers.mitie_featurizer import MitieFeaturizer
 from rasa_nlu_gao.featurizers.ngram_featurizer import NGramFeaturizer
@@ -61,6 +63,7 @@ component_classes = [
     BilstmCRFEntityExtractor, # customize
     JiebaPsegExtractor, # customize
     EntityEditIntent,  # customize
+    WordVectorsFeaturizer,  # customize
     EntitySynonymMapper,
     SpacyFeaturizer, MitieFeaturizer, NGramFeaturizer, RegexFeaturizer,
     CountVectorsFeaturizer,

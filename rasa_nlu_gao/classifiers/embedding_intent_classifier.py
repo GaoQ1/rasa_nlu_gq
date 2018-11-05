@@ -15,6 +15,8 @@ from rasa_nlu_gao.classifiers import INTENT_RANKING_LENGTH
 from rasa_nlu_gao.components import Component
 import numpy as np
 
+import code
+
 try:
     import cPickle as pickle
 except ImportError:
@@ -286,6 +288,8 @@ class EmbeddingIntentClassifier(Component):
         X = np.stack([e.get("text_features")
                       for e in training_data.intent_examples])
 
+        # code.interact(local=locals())
+
         intents_for_X = np.array([intent_dict[e.get("intent")]
                                   for e in training_data.intent_examples])
 
@@ -481,6 +485,7 @@ class EmbeddingIntentClassifier(Component):
         """Train the embedding intent classifier on a data set."""
 
         intent_dict = self._create_intent_dict(training_data)
+
         if len(intent_dict) < 2:
             logger.error("Can not train an intent classifier. "
                          "Need at least 2 different classes. "
