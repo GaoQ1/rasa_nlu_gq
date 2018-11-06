@@ -18,6 +18,8 @@ from rasa_nlu_gao.model import Metadata
 
 logger = logging.getLogger(__name__)
 
+import code
+
 class CountVectorsFeaturizer(Featurizer):
     """Bag of words featurizer
 
@@ -214,6 +216,8 @@ class CountVectorsFeaturizer(Featurizer):
         except ValueError:
             self.vect = None
             return
+
+        code.interact(local=locals())
 
         for i, example in enumerate(training_data.intent_examples):
             # create bag for each example

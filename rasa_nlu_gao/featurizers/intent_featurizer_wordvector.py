@@ -28,19 +28,71 @@ class WordVectorsFeaturizer(Featurizer):
     requires = ["tokens"]
 
     defaults = {
-
+        "vector": os.path.join("data", "vectors.txt"),
     }
 
-    def __init__(self, component_config=None):
+    @classmethod
+    def required_packages(cls):
+        # type: () -> List[Text]
+        return ["gensim", "numpy"]
+
+    def __init__(self, component_config=None, model=None):
         """Construct a new count vectorizer using the sklearn framework."""
 
         super(WordVectorsFeaturizer, self).__init__(component_config)
+        self.model = model
 
-    def train(self, training_data, cfg=None, **kwargs):
+    @classmethod
+    def create(cls, cfg):
+        import gensim
 
-        code.interact(local=locals())
+        component_conf = cfg.for_component(cls.name, cls.defaults)
+        vector_file = component_conf.get("vector")
+        if not vector_file:
+            raise Exception("The WordVectorsFeaturizer component needs "
+                            "the configuration value for 'vectors'.")
+        model = gensim.models.KeyedVectors.load_word2vec_format(vector_file, binary=False)
 
-        pass
+        return WordVectorsFeaturizer(component_conf, model)
+
+    @staticmethod
+    def _replace_number(text):
+        text = re.sub(r'\b[0-9]+\b', '__NUMBER__', text)
+        return text
+
+    def _get_message_text(self, message):
+        for t in message.get("tokens"):
+            
+            text = self._replace_number(t.text)
+
+            code.interact(local=locals())
+            pass
+
+
+        return ' '.join([self._replace_number(t.text) for t in message.get("tokens")])
+    
+
+    def train(self, training_data, cfg=None, **kwargs): # 将现有词向量取出来
+        import numpy as np
+
+        tokens_text = [self._get_message_text(example) for example in training_data.intent_examples]
+
+        # X = self.vect.fit_transform(lem_exs).toarray()
+
+        # rt = [self.model.get_vector(token.split(" ")) for token in tokens_text]
+        rt = [token.split(" ") for token in tokens_text]
+
+
+        # code.interact(local=locals())
+
+
+        for i, example in enumerate(training_data.intent_examples):
+            # create bag for each example
+            example.set("text_features",
+                        self._combine_with_existing_text_features(example,
+                                                                  X[i]))
+
+        
 
 
     def process(self, message, **kwargs):
