@@ -11,14 +11,11 @@ from typing import Any, Dict, List, Optional, Text
 from rasa_nlu_gao import utils
 from rasa_nlu_gao.featurizers import Featurizer
 from rasa_nlu_gao.training_data import Message
-from rasa_nlu_gao.training_data import TrainingData
 from rasa_nlu_gao.components import Component
-from rasa_nlu_gao.config import RasaNLUModelConfig
 from rasa_nlu_gao.model import Metadata
+import numpy as np
 
 logger = logging.getLogger(__name__)
-
-import code
 
 class WordVectorsFeaturizer(Featurizer):
     name = "intent_featurizer_wordvector"
@@ -28,7 +25,7 @@ class WordVectorsFeaturizer(Featurizer):
     requires = ["tokens"]
 
     defaults = {
-        "vector": os.path.join("data", "vectors.txt"),
+        "vector": os.path.join("data", "vectors.txt")
     }
 
     @classmethod
@@ -57,51 +54,40 @@ class WordVectorsFeaturizer(Featurizer):
 
     @staticmethod
     def _replace_number(text):
-        text = re.sub(r'\b[0-9]+\b', '__NUMBER__', text)
-        return text
+        return re.sub(r'\b[0-9]+\b', '__NUMBER__', text)
 
     def _get_message_text(self, message):
+        unk_vec = np.zeros((self.model.vector_size,))
+        all_tokens = [unk_vec]
+
         for t in message.get("tokens"):
-            
             text = self._replace_number(t.text)
+            if text in self.model.vocab:
+                all_tokens.append(self.model[text])
 
-            code.interact(local=locals())
-            pass
+        return np.array(all_tokens).mean(axis=0)
 
-
-        return ' '.join([self._replace_number(t.text) for t in message.get("tokens")])
-    
-
-    def train(self, training_data, cfg=None, **kwargs): # 将现有词向量取出来
-        import numpy as np
-
+    def train(self, training_data, cfg=None, **kwargs):
         tokens_text = [self._get_message_text(example) for example in training_data.intent_examples]
-
-        # X = self.vect.fit_transform(lem_exs).toarray()
-
-        # rt = [self.model.get_vector(token.split(" ")) for token in tokens_text]
-        rt = [token.split(" ") for token in tokens_text]
-
-
-        # code.interact(local=locals())
-
+        X = np.array(tokens_text)
 
         for i, example in enumerate(training_data.intent_examples):
-            # create bag for each example
-            example.set("text_features",
-                        self._combine_with_existing_text_features(example,
-                                                                  X[i]))
-
-        
-
+            example.set("text_features", self._combine_with_existing_text_features(example, X[i]))
 
     def process(self, message, **kwargs):
         # type: (Message, **Any) -> None
-        pass
+        message_text = self._get_message_text(message)
+
+        message.set("text_features", self._combine_with_existing_text_features(message, message_text))
 
     def persist(self, model_dir):
         # type: (Text) -> Dict[Text, Any]
-        pass
+        """Persist this model into the passed directory.
+        Returns the metadata necessary to load the model again."""
+
+        featurizer_file = os.path.join(model_dir, self.name + ".pkl")
+        utils.pycloud_pickle(featurizer_file, self)
+        return {"featurizer_file": self.name + ".pkl"}
 
     @classmethod
     def load(cls,
@@ -112,3 +98,12 @@ class WordVectorsFeaturizer(Featurizer):
              ):
 
         meta = model_metadata.for_component(cls.name)
+
+        if model_dir and meta.get("featurizer_file"):
+            file_name = meta.get("featurizer_file")
+            featurizer_file = os.path.join(model_dir, file_name)
+            return utils.pycloud_unpickle(featurizer_file)
+        else:
+            logger.warning("Failed to load featurizer. Maybe path {} "
+                           "doesn't exist".format(os.path.abspath(model_dir)))
+            return WordVectorsFeaturizer(meta)

@@ -15,8 +15,6 @@ from rasa_nlu_gao.classifiers import INTENT_RANKING_LENGTH
 from rasa_nlu_gao.components import Component
 import numpy as np
 
-import code
-
 try:
     import cPickle as pickle
 except ImportError:
@@ -287,8 +285,6 @@ class EmbeddingIntentClassifier(Component):
 
         X = np.stack([e.get("text_features")
                       for e in training_data.intent_examples])
-
-        # code.interact(local=locals())
 
         intents_for_X = np.array([intent_dict[e.get("intent")]
                                   for e in training_data.intent_examples])

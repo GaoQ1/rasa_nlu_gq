@@ -22,6 +22,7 @@
 #     dropout_keep: 0.5
 #     steps_check: 100
 
+############################################################################
 
 # language: "zh"
 
@@ -38,15 +39,15 @@
 #   intent: ["enter_data"]
 #   min_confidence: 0
 
+############################################################################
 
 language: "zh"
 
 pipeline:
 - name: "tokenizer_jieba"
 - name: "intent_featurizer_wordvector"
-
+  model: "data/vectors.txt"
 - name: "intent_classifier_tensorflow_embedding"
-
 
 - name: "ner_crf"
 - name: "jieba_pseg_extractor"
