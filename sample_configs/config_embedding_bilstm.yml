@@ -46,7 +46,7 @@ language: "zh"
 pipeline:
 - name: "tokenizer_jieba"
 - name: "intent_featurizer_wordvector"
-  model: "data/vectors.txt"
+  vector: "data/vectors.txt"
 - name: "intent_classifier_tensorflow_embedding"
 
 - name: "ner_crf"
