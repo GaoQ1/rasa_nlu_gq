@@ -13,10 +13,10 @@ And returning structured data like:
 ```
 
 ## Intent of this project
-这个项目的目的和初衷，是由于官方的rasa nlu里面提供的components和models并不能满足实际需求，有些models精确度不是很乐观。所以我自定义了几个components，而为什么不直接提个pr到rasa nlu官网呢，因为要写太多test。所以在我自己的github上开源并发布到Pypi上，这样后续也能不断往里面填充和优化模型，方便别人也方便自己。
+这个项目的目的和初衷，是由于官方的rasa nlu里面提供的components和models并不能满足实际需求。所以我自定义了一些components，并发布到Pypi上。可以通过`pip install rasa-nlu-gao`下载。后续会不断往里面填充和优化组件，也欢迎大家贡献。
 
 ## New features
-目前新增了两个特性，支持版本为rasa-nlu-gao==v0.1.2
+目前新增了四个特性
  - 新增了实体识别的模型，一个是bilstm+crf，一个是idcnn+crf膨胀卷积模型，对应的yml文件配置如下：
  ```
   language: "zh"
@@ -56,6 +56,35 @@ And returning structured data like:
     OOV_token: oov
     token_pattern: '(?u)\b\w+\b'
   - name: "intent_classifier_tensorflow_embedding"
+ ```
+ - 新增了根据实体反向修改意图，对应的文件配置如下：
+ ```
+language: "zh"
+
+pipeline:
+- name: "tokenizer_jieba"
+- name: "ner_crf"
+- name: "jieba_pseg_extractor"
+- name: "intent_featurizer_count_vectors"
+  OOV_token: oov
+  token_pattern: '(?u)\b\w+\b'
+- name: "intent_classifier_tensorflow_embedding"
+- name: "entity_edit_intent"
+  entity: ["nr"]
+  intent: ["enter_data"]
+  min_confidence: 0
+ ```
+ - 新增了word2vec提取词向量特征，对应的配置文件如下：
+ ```
+language: "zh"
+
+pipeline:
+- name: "tokenizer_jieba"
+- name: "intent_featurizer_wordvector"
+  vector: "data/vectors.txt"
+- name: "intent_classifier_tensorflow_embedding"
+- name: "ner_crf"
+- name: "jieba_pseg_extractor"
  ```
 
 ## Quick Install
