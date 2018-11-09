@@ -8,8 +8,6 @@ import os
 import re
 from typing import Any, Dict, List, Optional, Text
 
-import code
-
 from rasa_nlu_gao import utils
 from rasa_nlu_gao.featurizers import Featurizer
 from rasa_nlu_gao.training_data import Message
@@ -84,7 +82,6 @@ class WordVectorsFeaturizer(Featurizer):
 
             elif self.category == 'elmo':
                 single_token = np.squeeze(self.model.sents2elmo(text)[0])
-
                 all_tokens.append(single_token)
 
         return np.array(all_tokens).mean(axis=0)
@@ -102,16 +99,6 @@ class WordVectorsFeaturizer(Featurizer):
 
         message.set("text_features", self._combine_with_existing_text_features(message, message_text))
 
-    def persist(self, model_dir):
-        # type: (Text) -> Dict[Text, Any]
-        """Persist this model into the passed directory.
-        Returns the metadata necessary to load the model again."""
-
-        featurizer_file = os.path.join(model_dir, self.name + ".pkl")
-
-        utils.pycloud_pickle(featurizer_file, self)
-        return {"featurizer_file": self.name + ".pkl"}
-
     @classmethod
     def load(cls,
              model_dir=None,  # type: Text
@@ -119,13 +106,25 @@ class WordVectorsFeaturizer(Featurizer):
              cached_component=None,  # type: Optional[Component]
              **kwargs  # type: **Any
              ):
-
         meta = model_metadata.for_component(cls.name)
 
-        if model_dir and meta.get("featurizer_file"):
-            file_name = meta.get("featurizer_file")
-            featurizer_file = os.path.join(model_dir, file_name)
-            return utils.pycloud_unpickle(featurizer_file)
+        if model_dir:
+            vector_file = meta.get("vector")
+            elmo_file = meta.get("elmo")
+
+            if vector_file:
+                import gensim
+                model = gensim.models.KeyedVectors.load_word2vec_format(vector_file, binary=False)
+                category = 'word2vec'
+            elif elmo_file:
+                from rasa_nlu_gao.models.elmo_cn import Embedder
+                model = Embedder(elmo_file)
+                category = 'elmo'
+
+            return WordVectorsFeaturizer(
+                component_config=meta,
+                model=model,
+                category=category)
         else:
             logger.warning("Failed to load featurizer. Maybe path {} "
                            "doesn't exist".format(os.path.abspath(model_dir)))
