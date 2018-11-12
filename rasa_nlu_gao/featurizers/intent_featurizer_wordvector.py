@@ -65,7 +65,7 @@ class WordVectorsFeaturizer(Featurizer):
 
     @staticmethod
     def _replace_number(text):
-        return re.sub(r'\b[0-9]+\b', '__NUMBER__', text)
+        return re.sub(r'\b[0-9]+\b', '0', text)
 
     def _get_message_text(self, message):
         all_tokens = []
