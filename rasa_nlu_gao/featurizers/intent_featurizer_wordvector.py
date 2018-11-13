@@ -26,7 +26,8 @@ class WordVectorsFeaturizer(Featurizer):
 
     defaults = {
         "vector": None,
-        "elmo": None
+        "elmo": None,
+        "limit": None
     }
 
     @classmethod
@@ -54,7 +55,7 @@ class WordVectorsFeaturizer(Featurizer):
         
         if vector_file:
             import gensim
-            model = gensim.models.KeyedVectors.load_word2vec_format(vector_file, binary=False)
+            model = gensim.models.KeyedVectors.load_word2vec_format(vector_file, binary=False, limit=component_conf.get("limit"))
             category = 'word2vec'
         elif elmo_file:
             from rasa_nlu_gao.models.elmo_cn import Embedder
@@ -114,7 +115,7 @@ class WordVectorsFeaturizer(Featurizer):
 
             if vector_file:
                 import gensim
-                model = gensim.models.KeyedVectors.load_word2vec_format(vector_file, binary=False)
+                model = gensim.models.KeyedVectors.load_word2vec_format(vector_file, binary=False, limit=meta.get("limit"))
                 category = 'word2vec'
             elif elmo_file:
                 from rasa_nlu_gao.models.elmo_cn import Embedder
