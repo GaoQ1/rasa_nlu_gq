@@ -35,6 +35,7 @@ from rasa_nlu_gao.extractors.jieba_pseg_extractor import JiebaPsegExtractor  # c
 from rasa_nlu_gao.classifiers.entity_edit_intent import EntityEditIntent  # customize
 
 from rasa_nlu_gao.featurizers.intent_featurizer_wordvector import WordVectorsFeaturizer  # customize
+from rasa_nlu_gao.featurizers.bert_vectors_featurizer import BertVectorsFeaturizer  # customize
 
 
 from rasa_nlu_gao.featurizers.mitie_featurizer import MitieFeaturizer
@@ -64,6 +65,7 @@ component_classes = [
     JiebaPsegExtractor, # customize
     EntityEditIntent,  # customize
     WordVectorsFeaturizer,  # customize
+    BertVectorsFeaturizer,  # customize
     EntitySynonymMapper,
     SpacyFeaturizer, MitieFeaturizer, NGramFeaturizer, RegexFeaturizer,
     CountVectorsFeaturizer,
