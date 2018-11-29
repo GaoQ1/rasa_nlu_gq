@@ -53,8 +53,8 @@ class BertClient:
             X = np.frombuffer(_buffer(arr_val), dtype=arr_info['dtype'])
             return self.formatter(X.reshape(arr_info['shape']))
         else:
-            raise AttributeError('"texts" must be "List[str]" and non-empty!')
+            raise AttributeError('"texts" must be "List[str]"')
 
     @staticmethod
     def is_valid_input(texts):
-        return isinstance(texts, list) and all(isinstance(s, _str) and s.strip() for s in texts)
+        return isinstance(texts, list)
