@@ -14,7 +14,9 @@ from rasa_nlu_gao.training_data import Message
 from rasa_nlu_gao.components import Component
 from rasa_nlu_gao.model import Metadata
 from rasa_nlu_gao.models.bert_client import BertClient
+
 import numpy as np
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -56,12 +58,15 @@ class BertVectorsFeaturizer(Featurizer):
             text = self._replace_number(t.text)
             all_tokens.append(text)
 
-        return ' '.join(all_tokens)
+        bert_embedding = self.bc.encode([' '.join(all_tokens)])
+
+        return np.squeeze(bert_embedding)
 
 
     def train(self, training_data, cfg=None, **kwargs):
-        tokens_text = [self._get_message_text(example) for example in training_data.intent_examples]
-        X = self.bc.encode(tokens_text)
+        tokens_text = [self._get_message_text(example) for example in tqdm(training_data.intent_examples)]
+
+        X = np.array(tokens_text)
 
         for i, example in enumerate(training_data.intent_examples):
             example.set("text_features", self._combine_with_existing_text_features(example, X[i]))
@@ -69,9 +74,8 @@ class BertVectorsFeaturizer(Featurizer):
     def process(self, message, **kwargs):
         # type: (Message, **Any) -> None
         message_text = self._get_message_text(message)
-        message_feature = self.bc.encode([message_text])
 
-        message.set("text_features", self._combine_with_existing_text_features(message, message_feature))
+        message.set("text_features", self._combine_with_existing_text_features(message, message_text))
 
     @classmethod
     def load(cls,
