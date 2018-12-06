@@ -13,6 +13,7 @@ from rasa_nlu_gao.featurizers import Featurizer
 from rasa_nlu_gao.training_data import Message
 from rasa_nlu_gao.components import Component
 from rasa_nlu_gao.model import Metadata
+from rasa_nlu_gao.models.bert_client import BertClient
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -35,6 +36,9 @@ class BertVectorsFeaturizer(Featurizer):
 
     def __init__(self, component_config=None):
         super(BertVectorsFeaturizer, self).__init__(component_config)
+        ip = self.component_config['ip']
+        port = self.component_config['port']
+        self.bc = BertClient(ip=ip, port=int(port))
 
     @classmethod
     def create(cls, cfg):
@@ -46,20 +50,13 @@ class BertVectorsFeaturizer(Featurizer):
         return re.sub(r'\b[0-9]+\b', '0', text)
 
     def _get_message_text(self, message):
-        from rasa_nlu_gao.models.bert_client import BertClient
-        ip = self.component_config['ip']
-        port = self.component_config['port']
-        bc = BertClient(ip=ip, port=int(port))
-
         all_tokens = []
 
         for t in message.get("tokens"):
             text = self._replace_number(t.text)
-            single_token = np.squeeze(bc.encode([text])[0])
+            all_tokens.append(text)
 
-            all_tokens.append(single_token)
-
-        return np.array(all_tokens).mean(axis=0)
+        return self.bc.encode(all_tokens).mean(axis=0)
 
     def train(self, training_data, cfg=None, **kwargs):
         tokens_text = [self._get_message_text(example) for example in training_data.intent_examples]
