@@ -56,11 +56,12 @@ class BertVectorsFeaturizer(Featurizer):
             text = self._replace_number(t.text)
             all_tokens.append(text)
 
-        return self.bc.encode(all_tokens).mean(axis=0)
+        return ' '.join(all_tokens)
+
 
     def train(self, training_data, cfg=None, **kwargs):
         tokens_text = [self._get_message_text(example) for example in training_data.intent_examples]
-        X = np.array(tokens_text)
+        X = self.bc.encode(tokens_text)
 
         for i, example in enumerate(training_data.intent_examples):
             example.set("text_features", self._combine_with_existing_text_features(example, X[i]))
@@ -68,8 +69,9 @@ class BertVectorsFeaturizer(Featurizer):
     def process(self, message, **kwargs):
         # type: (Message, **Any) -> None
         message_text = self._get_message_text(message)
+        message_feature = self.bc.encode([message_text])
 
-        message.set("text_features", self._combine_with_existing_text_features(message, message_text))
+        message.set("text_features", self._combine_with_existing_text_features(message, message_feature))
 
     @classmethod
     def load(cls,
