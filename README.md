@@ -16,7 +16,7 @@ And returning structured data like:
 这个项目的目的和初衷，是由于官方的rasa nlu里面提供的components和models并不能满足实际需求。所以我自定义了一些components，并发布到Pypi上。可以通过`pip install rasa-nlu-gao`下载。后续会不断往里面填充和优化组件，也欢迎大家贡献。
 
 ## New features
-目前新增了四个特性
+目前新增的特性如下（请下载最新的rasa-nlu-gao版本）：
  - 新增了实体识别的模型，一个是bilstm+crf，一个是idcnn+crf膨胀卷积模型，对应的yml文件配置如下：
  ```
   language: "zh"
@@ -86,6 +86,20 @@ pipeline:
 - name: "ner_crf"
 - name: "jieba_pseg_extractor"
  ```
+- 新增了bert模型提取词向量特征，对应的配置文件如下：
+```
+ language: "zh"
+
+pipeline:
+- name: "tokenizer_jieba"
+- name: "bert_vectors_featurizer"
+  ip: '172.16.10.46'
+  port: 5555
+- name: "intent_classifier_tensorflow_embedding"
+
+- name: "ner_crf"
+- name: "jieba_pseg_extractor"
+```
 
 ## Quick Install
 ```
