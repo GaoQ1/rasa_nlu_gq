@@ -17,7 +17,7 @@ And returning structured data like:
 
 ## New features
 目前新增的特性如下（请下载最新的rasa-nlu-gao版本）：
- - 新增了实体识别的模型，一个是bilstm+crf，一个是idcnn+crf膨胀卷积模型，对应的yml文件配置如下：
+  - 新增了实体识别的模型，一个是bilstm+crf，一个是idcnn+crf膨胀卷积模型，对应的yml文件配置如下：
   ```
     language: "zh"
 
@@ -43,7 +43,7 @@ And returning structured data like:
         dropout_keep: 0.5
         steps_check: 100
   ```
- - 新增了jieba词性标注的模块，可以方便识别名字，地名，机构名等等jieba能够支持的词性，对应的yml文件配置如下：
+  - 新增了jieba词性标注的模块，可以方便识别名字，地名，机构名等等jieba能够支持的词性，对应的yml文件配置如下：
   ```
     language: "zh"
 
@@ -57,7 +57,7 @@ And returning structured data like:
       token_pattern: '(?u)\b\w+\b'
     - name: "intent_classifier_tensorflow_embedding"
   ```
- - 新增了根据实体反向修改意图，对应的文件配置如下：
+  - 新增了根据实体反向修改意图，对应的文件配置如下：
   ```
     language: "zh"
 
@@ -74,7 +74,7 @@ And returning structured data like:
       intent: ["enter_data"]
       min_confidence: 0
   ```
- - 新增了word2vec提取词向量特征，对应的配置文件如下：
+  - 新增了word2vec提取词向量特征，对应的配置文件如下：
   ```
     language: "zh"
 
@@ -86,7 +86,7 @@ And returning structured data like:
     - name: "ner_crf"
     - name: "jieba_pseg_extractor"
   ```
-- 新增了bert模型提取词向量特征，对应的配置文件如下：
+  - 新增了bert模型提取词向量特征，对应的配置文件如下：
   ```
     language: "zh"
 
