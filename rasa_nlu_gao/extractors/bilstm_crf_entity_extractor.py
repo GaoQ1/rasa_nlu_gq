@@ -26,6 +26,7 @@ from rasa_nlu_gao.training_data import Message
 from rasa_nlu_gao.utils.bilstm_utils import char_mapping, tag_mapping, prepare_dataset, BatchManager, iob_iobes, iob2, save_model, create_model, input_from_line
 
 from rasa_nlu_gao.models.model import Model
+from multiprocessing import cpu_count
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +62,13 @@ class BilstmCRFEntityExtractor(EntityExtractor):
         "clip": 5,
         "optimizer": "adam",
         "dropout_keep": 0.5,
-        "steps_check": 100
+        "steps_check": 100,
+        "config_proto": {
+            "device_count": cpu_count(),
+            "inter_op_parallelism_threads": 0,
+            "intra_op_parallelism_threads": 0,
+            "allow_growth": True
+        }
     }
     
 
@@ -160,6 +167,22 @@ class BilstmCRFEntityExtractor(EntityExtractor):
 
         return cooked_data
 
+    @staticmethod
+    def get_config_proto(component_config):
+        # 配置configProto
+        config = tf.ConfigProto(
+            device_count={
+                'CPU': component_config['config_proto']['device_count']
+            },
+            inter_op_parallelism_threads=component_config['config_proto']['inter_op_parallelism_threads'],
+            intra_op_parallelism_threads=component_config['config_proto']['intra_op_parallelism_threads'],
+            gpu_options={
+                'allow_growth': component_config['config_proto']['allow_growth']
+            }
+        )
+        return config
+
+
     def update_tag_scheme(self, sentences, tag_scheme):
         for i, s in enumerate(sentences):
             tags = [w[1] for w in s]
@@ -180,12 +203,10 @@ class BilstmCRFEntityExtractor(EntityExtractor):
                 raise Exception('Unknown tagging scheme!')
 
     def _train_model(self, train_manager):
-        tf_config = tf.ConfigProto()
-        # tf_config.gpu_options.allow_growth = True
-
         # 训练集全量跑一次需要迭代的次数
         steps_per_epoch = train_manager.len_data
 
+        tf_config = self.get_config_proto(self.component_config)
         sess = tf.Session(config=tf_config)
 
         self.session = sess
@@ -237,9 +258,7 @@ class BilstmCRFEntityExtractor(EntityExtractor):
              ):
         meta = model_metadata.for_component(cls.name)
 
-        tf_config = tf.ConfigProto()
-        # tf_config.gpu_options.allow_growth = True
-
+        tf_config = cls.get_config_proto(meta)
         sess = tf.Session(config=tf_config)
 
         model = Model(meta)

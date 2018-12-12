@@ -16,8 +16,6 @@ from rasa_nlu_gao.components import Component
 from multiprocessing import cpu_count
 import numpy as np
 
-import code
-
 try:
     import cPickle as pickle
 except ImportError:
@@ -97,7 +95,7 @@ class EmbeddingIntentClassifier(Component):
             "inter_op_parallelism_threads": 0,
             "intra_op_parallelism_threads": 0,
             "allow_growth": True
-        }        
+        }      
     }
 
     @classmethod
