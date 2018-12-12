@@ -18,88 +18,88 @@ And returning structured data like:
 ## New features
 目前新增的特性如下（请下载最新的rasa-nlu-gao版本）：
  - 新增了实体识别的模型，一个是bilstm+crf，一个是idcnn+crf膨胀卷积模型，对应的yml文件配置如下：
- ```
-  language: "zh"
+  ```
+    language: "zh"
 
-  pipeline:
+    pipeline:
+      - name: "tokenizer_jieba"
+
+      - name: "intent_featurizer_count_vectors"
+        token_pattern: '(?u)\b\w+\b'
+      - name: "intent_classifier_tensorflow_embedding"
+
+      - name: "ner_bilstm_crf"
+        lr: 0.001
+        char_dim: 100
+        lstm_dim: 100
+        batches_per_epoch: 10
+        seg_dim: 20
+        num_segs: 4
+        batch_size: 200
+        tag_schema: "iobes"
+        model_type: "bilstm" # 模型支持两种idcnn膨胀卷积模型或bilstm双向lstm模型
+        clip: 5
+        optimizer: "adam"
+        dropout_keep: 0.5
+        steps_check: 100
+  ```
+ - 新增了jieba词性标注的模块，可以方便识别名字，地名，机构名等等jieba能够支持的词性，对应的yml文件配置如下：
+  ```
+    language: "zh"
+
+    pipeline:
     - name: "tokenizer_jieba"
-
+    - name: "ner_crf"
+    - name: "jieba_pseg_extractor"
+      part_of_speech: ["nr", "ns", "nt"]
     - name: "intent_featurizer_count_vectors"
+      OOV_token: oov
       token_pattern: '(?u)\b\w+\b'
     - name: "intent_classifier_tensorflow_embedding"
-
-    - name: "ner_bilstm_crf"
-      lr: 0.001
-      char_dim: 100
-      lstm_dim: 100
-      batches_per_epoch: 10
-      seg_dim: 20
-      num_segs: 4
-      batch_size: 200
-      tag_schema: "iobes"
-      model_type: "bilstm" # 模型支持两种idcnn膨胀卷积模型或bilstm双向lstm模型
-      clip: 5
-      optimizer: "adam"
-      dropout_keep: 0.5
-      steps_check: 100
- ```
- - 新增了jieba词性标注的模块，可以方便识别名字，地名，机构名等等jieba能够支持的词性，对应的yml文件配置如下：
- ```
-  language: "zh"
-
-  pipeline:
-  - name: "tokenizer_jieba"
-  - name: "ner_crf"
-  - name: "jieba_pseg_extractor"
-    part_of_speech: ["nr", "ns", "nt"]
-  - name: "intent_featurizer_count_vectors"
-    OOV_token: oov
-    token_pattern: '(?u)\b\w+\b'
-  - name: "intent_classifier_tensorflow_embedding"
- ```
+  ```
  - 新增了根据实体反向修改意图，对应的文件配置如下：
- ```
-language: "zh"
+  ```
+    language: "zh"
 
-pipeline:
-- name: "tokenizer_jieba"
-- name: "ner_crf"
-- name: "jieba_pseg_extractor"
-- name: "intent_featurizer_count_vectors"
-  OOV_token: oov
-  token_pattern: '(?u)\b\w+\b'
-- name: "intent_classifier_tensorflow_embedding"
-- name: "entity_edit_intent"
-  entity: ["nr"]
-  intent: ["enter_data"]
-  min_confidence: 0
- ```
+    pipeline:
+    - name: "tokenizer_jieba"
+    - name: "ner_crf"
+    - name: "jieba_pseg_extractor"
+    - name: "intent_featurizer_count_vectors"
+      OOV_token: oov
+      token_pattern: '(?u)\b\w+\b'
+    - name: "intent_classifier_tensorflow_embedding"
+    - name: "entity_edit_intent"
+      entity: ["nr"]
+      intent: ["enter_data"]
+      min_confidence: 0
+  ```
  - 新增了word2vec提取词向量特征，对应的配置文件如下：
- ```
-language: "zh"
+  ```
+    language: "zh"
 
-pipeline:
-- name: "tokenizer_jieba"
-- name: "intent_featurizer_wordvector"
-  vector: "data/vectors.txt"
-- name: "intent_classifier_tensorflow_embedding"
-- name: "ner_crf"
-- name: "jieba_pseg_extractor"
- ```
+    pipeline:
+    - name: "tokenizer_jieba"
+    - name: "intent_featurizer_wordvector"
+      vector: "data/vectors.txt"
+    - name: "intent_classifier_tensorflow_embedding"
+    - name: "ner_crf"
+    - name: "jieba_pseg_extractor"
+  ```
 - 新增了bert模型提取词向量特征，对应的配置文件如下：
-```
- language: "zh"
+  ```
+    language: "zh"
 
-pipeline:
-- name: "tokenizer_jieba"
-- name: "bert_vectors_featurizer"
-  ip: '172.16.10.46'
-  port: 5555
-- name: "intent_classifier_tensorflow_embedding"
+    pipeline:
+    - name: "tokenizer_jieba"
+    - name: "bert_vectors_featurizer"
+      ip: '172.16.10.46'
+      port: 5555
+    - name: "intent_classifier_tensorflow_embedding"
 
-- name: "ner_crf"
-- name: "jieba_pseg_extractor"
-```
+    - name: "ner_crf"
+    - name: "jieba_pseg_extractor"
+  ```
 
 ## Quick Install
 ```
