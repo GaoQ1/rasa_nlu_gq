@@ -16,6 +16,8 @@ from rasa_nlu_gao.components import Component
 from multiprocessing import cpu_count
 import numpy as np
 
+import code
+
 try:
     import cPickle as pickle
 except ImportError:
@@ -239,18 +241,6 @@ class EmbeddingIntentClassifier(Component):
         # persisted embeddings
         self.word_embed = word_embed
         self.intent_embed = intent_embed
-
-        # 配置configProto
-        self.config = tf.ConfigProto(
-            device_count={
-                "CPU": self.component_config['config_proto']['device_count']
-            },
-            inter_op_parallelism_threads=self.component_config['config_proto']['inter_op_parallelism_threads'],
-            intra_op_parallelism_threads=self.component_config['config_proto']['intra_op_parallelism_threads'],
-        )
-        self.config.gpu_options.allow_growth = self.component_config['config_proto']['allow_growth']
-
-        self.component_config['intent_tokenization_flag']
 
     # training data helpers:
     @staticmethod
@@ -543,8 +533,10 @@ class EmbeddingIntentClassifier(Component):
 
             train_op = tf.train.AdamOptimizer().minimize(loss)
 
+            config_proto = self.get_config_proto(self.component_config)
+
             # train tensorflow graph
-            self.session = tf.Session(config=self.config)
+            self.session = tf.Session(config=config_proto)
 
             self._train_tf(X, Y, intents_for_X,
                            loss, is_training, train_op)
@@ -659,6 +651,21 @@ class EmbeddingIntentClassifier(Component):
 
         return {"classifier_file": self.name + ".ckpt"}
 
+    @staticmethod
+    def get_config_proto(component_config):
+        # 配置configProto
+        config = tf.ConfigProto(
+            device_count={
+                'CPU': component_config['config_proto']['device_count']
+            },
+            inter_op_parallelism_threads=component_config['config_proto']['inter_op_parallelism_threads'],
+            intra_op_parallelism_threads=component_config['config_proto']['intra_op_parallelism_threads'],
+            gpu_options={
+                'allow_growth': component_config['config_proto']['allow_growth']
+            }
+        )
+        return config
+
     @classmethod
     def load(cls,
              model_dir=None,  # type: Text
@@ -669,13 +676,14 @@ class EmbeddingIntentClassifier(Component):
         # type: (...) -> EmbeddingIntentClassifier
 
         meta = model_metadata.for_component(cls.name)
+        config_proto = cls.get_config_proto(meta)
 
         if model_dir and meta.get("classifier_file"):
             file_name = meta.get("classifier_file")
             checkpoint = os.path.join(model_dir, file_name)
             graph = tf.Graph()
             with graph.as_default():
-                sess = tf.Session(config=cls.config)
+                sess = tf.Session(config=config_proto)
                 saver = tf.train.import_meta_graph(checkpoint + '.meta')
 
                 saver.restore(sess, checkpoint)
