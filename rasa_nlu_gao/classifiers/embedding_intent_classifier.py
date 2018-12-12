@@ -13,6 +13,7 @@ from typing import List, Text, Any, Optional, Dict
 
 from rasa_nlu_gao.classifiers import INTENT_RANKING_LENGTH
 from rasa_nlu_gao.components import Component
+from multiprocessing import cpu_count
 import numpy as np
 
 try:
@@ -87,7 +88,14 @@ class EmbeddingIntentClassifier(Component):
 
         # visualization of accuracy
         "evaluate_every_num_epochs": 10,  # small values may hurt performance
-        "evaluate_on_num_examples": 1000  # large values may hurt performance
+        "evaluate_on_num_examples": 1000,  # large values may hurt performance
+
+        "config_proto": {
+            "device_count": cpu_count(),
+            "inter_op_parallelism_threads": 0,
+            "intra_op_parallelism_threads": 0,
+            "allow_growth": True
+        }        
     }
 
     @classmethod
@@ -231,6 +239,18 @@ class EmbeddingIntentClassifier(Component):
         # persisted embeddings
         self.word_embed = word_embed
         self.intent_embed = intent_embed
+
+        # 配置configProto
+        self.config = tf.ConfigProto(
+            device_count={
+                "CPU": self.component_config['config_proto']['device_count']
+            },
+            inter_op_parallelism_threads=self.component_config['config_proto']['inter_op_parallelism_threads'],
+            intra_op_parallelism_threads=self.component_config['config_proto']['intra_op_parallelism_threads'],
+        )
+        self.config.gpu_options.allow_growth = self.component_config['config_proto']['allow_growth']
+
+        self.component_config['intent_tokenization_flag']
 
     # training data helpers:
     @staticmethod
@@ -524,7 +544,7 @@ class EmbeddingIntentClassifier(Component):
             train_op = tf.train.AdamOptimizer().minimize(loss)
 
             # train tensorflow graph
-            self.session = tf.Session()
+            self.session = tf.Session(config=self.config)
 
             self._train_tf(X, Y, intents_for_X,
                            loss, is_training, train_op)
@@ -655,7 +675,7 @@ class EmbeddingIntentClassifier(Component):
             checkpoint = os.path.join(model_dir, file_name)
             graph = tf.Graph()
             with graph.as_default():
-                sess = tf.Session()
+                sess = tf.Session(config=cls.config)
                 saver = tf.train.import_meta_graph(checkpoint + '.meta')
 
                 saver.restore(sess, checkpoint)
