@@ -95,7 +95,7 @@ class EmbeddingIntentClassifier(Component):
             "inter_op_parallelism_threads": 0,
             "intra_op_parallelism_threads": 0,
             "allow_growth": True
-        }      
+        }
     }
 
     @classmethod

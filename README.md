@@ -22,26 +22,24 @@ And returning structured data like:
     language: "zh"
 
     pipeline:
-      - name: "tokenizer_jieba"
-
-      - name: "intent_featurizer_count_vectors"
-        token_pattern: '(?u)\b\w+\b'
-      - name: "intent_classifier_tensorflow_embedding"
-
-      - name: "ner_bilstm_crf"
-        lr: 0.001
-        char_dim: 100
-        lstm_dim: 100
-        batches_per_epoch: 10
-        seg_dim: 20
-        num_segs: 4
-        batch_size: 200
-        tag_schema: "iobes"
-        model_type: "bilstm" # 模型支持两种idcnn膨胀卷积模型或bilstm双向lstm模型
-        clip: 5
-        optimizer: "adam"
-        dropout_keep: 0.5
-        steps_check: 100
+    - name: "tokenizer_jieba"
+    - name: "intent_featurizer_count_vectors"
+      token_pattern: "(?u)\b\w+\b"
+    - name: "intent_classifier_tensorflow_embedding"
+    - name: "ner_bilstm_crf"
+      lr: 0.001
+      char_dim: 100
+      lstm_dim: 100
+      batches_per_epoch: 10
+      seg_dim: 20
+      num_segs: 4
+      batch_size: 200
+      tag_schema: "iobes"
+      model_type: "bilstm" # 模型支持两种idcnn膨胀卷积模型或bilstm双向lstm模型
+      clip: 5
+      optimizer: "adam"
+      dropout_keep: 0.5
+      steps_check: 100
   ```
   - 新增了jieba词性标注的模块，可以方便识别名字，地名，机构名等等jieba能够支持的词性，对应的yml文件配置如下：
   ```
@@ -54,7 +52,7 @@ And returning structured data like:
       part_of_speech: ["nr", "ns", "nt"]
     - name: "intent_featurizer_count_vectors"
       OOV_token: oov
-      token_pattern: '(?u)\b\w+\b'
+      token_pattern: "(?u)\b\w+\b"
     - name: "intent_classifier_tensorflow_embedding"
   ```
   - 新增了根据实体反向修改意图，对应的文件配置如下：
@@ -96,9 +94,31 @@ And returning structured data like:
       ip: '172.16.10.46'
       port: 5555
     - name: "intent_classifier_tensorflow_embedding"
-
     - name: "ner_crf"
     - name: "jieba_pseg_extractor"
+  ```
+  - 新增了对CPU和GPU的利用率的配置，主要是`intent_classifier_tensorflow_embedding`和`ner_bilstm_crf`这两个使用到tensorflow的组件，配置如下（当然config_proto可以不配置，默认值会将资源全部利用）：
+  ```
+    language: "zh"
+
+    pipeline:
+    - name: "tokenizer_jieba"
+    - name: "intent_featurizer_count_vectors"
+      token_pattern: '(?u)\b\w+\b'
+    - name: "intent_classifier_tensorflow_embedding"
+      config_proto: {
+        "device_count": 4,
+        "inter_op_parallelism_threads": 0,
+        "intra_op_parallelism_threads": 0,
+        "allow_growth": True
+      }
+    - name: "ner_bilstm_crf"
+      config_proto: {
+        "device_count": 4,
+        "inter_op_parallelism_threads": 0,
+        "intra_op_parallelism_threads": 0,
+        "allow_growth": True
+      }
   ```
 
 ## Quick Install
