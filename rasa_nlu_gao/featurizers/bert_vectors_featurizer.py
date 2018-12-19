@@ -70,8 +70,8 @@ class BertVectorsFeaturizer(Featurizer):
         return BertVectorsFeaturizer(component_conf)
 
     @staticmethod
-    def _replace_number(text):
-        return re.sub(r'\b[0-9]+\b', '0', text)
+    def _replace_number_blank(text):
+        return re.sub(r'\b[0-9]+\b', '0', text).replace(' ', '')
 
     def _get_message_text(self, message):
         all_tokens = []
@@ -79,7 +79,7 @@ class BertVectorsFeaturizer(Featurizer):
         for msg in message:
             msg_tokens = []
             for t in msg.get("tokens"):
-                text = self._replace_number(t.text)
+                text = self._replace_number_blank(t.text)
                 msg_tokens.append(text)
 
             all_tokens.append(msg_tokens)
