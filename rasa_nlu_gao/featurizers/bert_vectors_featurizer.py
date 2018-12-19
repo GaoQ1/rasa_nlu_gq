@@ -13,7 +13,7 @@ from rasa_nlu_gao.featurizers import Featurizer
 from rasa_nlu_gao.training_data import Message
 from rasa_nlu_gao.components import Component
 from rasa_nlu_gao.model import Metadata
-from rasa_nlu_gao.models.bert_client import BertClient
+from bert_serving.client import BertClient
 
 import numpy as np
 from tqdm import tqdm
@@ -29,18 +29,39 @@ class BertVectorsFeaturizer(Featurizer):
 
     defaults = {
         "ip": 'localhost',
-        "port": 5555
+        "port": 5555,
+        "port_out": 5556,
+        "show_server_config": False,
+        "output_fmt": 'ndarray',
+        "check_version": True,
+        "timeout": 5000,
+        "identity": None
     }
 
     @classmethod
     def required_packages(cls):
-        return ["numpy"]
+        return ["numpy", "bert_serving"]
 
     def __init__(self, component_config=None):
         super(BertVectorsFeaturizer, self).__init__(component_config)
         ip = self.component_config['ip']
         port = self.component_config['port']
-        self.bc = BertClient(ip=ip, port=int(port))
+        port_out = self.component_config['port_out']
+        show_server_config = self.component_config['show_server_config']
+        output_fmt = self.component_config['output_fmt']
+        check_version = self.component_config['check_version']
+        timeout = self.component_config['timeout']
+        identity = self.component_config['identity']
+        self.bc = BertClient(
+            ip=ip,
+            port=int(port),
+            port_out=int(port_out),
+            show_server_config=show_server_config,
+            output_fmt=output_fmt,
+            check_version=check_version,
+            timeout=int(timeout),
+            identity=identity
+        )
 
     @classmethod
     def create(cls, cfg):
@@ -58,7 +79,7 @@ class BertVectorsFeaturizer(Featurizer):
             text = self._replace_number(t.text)
             all_tokens.append(text)
 
-        bert_embedding = self.bc.encode([' '.join(all_tokens)])
+        bert_embedding = self.bc.encode([all_tokens], is_tokenized=True)
 
         return np.squeeze(bert_embedding)
 

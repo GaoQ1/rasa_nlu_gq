@@ -56,38 +56,41 @@
 ############################################################################
 
 
-# language: "zh"
-
-# pipeline:
-# - name: "tokenizer_jieba"
-# - name: "bert_vectors_featurizer"
-#   ip: '172.16.10.46'
-#   port: 5555
-# - name: "intent_classifier_tensorflow_embedding"
-
-# - name: "ner_crf"
-# - name: "jieba_pseg_extractor"
-
-###########################################################################
-
-
 language: "zh"
 
 pipeline:
 - name: "tokenizer_jieba"
+- name: "bert_vectors_featurizer"
+  ip: '172.16.10.46'
+  port: 6555
+  port_out: 6556
+  show_server_config: True
+  timeout: 10000
+- name: "intent_classifier_tensorflow_embedding"
+
 - name: "ner_crf"
 - name: "jieba_pseg_extractor"
-- name: "intent_featurizer_count_vectors"
-  OOV_token: oov
-  token_pattern: '(?u)\b\w+\b'
-- name: "intent_classifier_tensorflow_embedding"
-  config_proto: {
-    "device_count": 4,
-    "inter_op_parallelism_threads": 0,
-    "intra_op_parallelism_threads": 0,
-    "allow_growth": True
-  }
-- name: "entity_edit_intent"
-  entity: ["nr"]
-  intent: ["enter_data"]
-  min_confidence: 0
+
+###########################################################################
+
+
+# language: "zh"
+
+# pipeline:
+# - name: "tokenizer_jieba"
+# - name: "ner_crf"
+# - name: "jieba_pseg_extractor"
+# - name: "intent_featurizer_count_vectors"
+#   OOV_token: oov
+#   token_pattern: '(?u)\b\w+\b'
+# - name: "intent_classifier_tensorflow_embedding"
+#   config_proto: {
+#     "device_count": 4,
+#     "inter_op_parallelism_threads": 0,
+#     "intra_op_parallelism_threads": 0,
+#     "allow_growth": True
+#   }
+# - name: "entity_edit_intent"
+#   entity: ["nr"]
+#   intent: ["enter_data"]
+#   min_confidence: 0
