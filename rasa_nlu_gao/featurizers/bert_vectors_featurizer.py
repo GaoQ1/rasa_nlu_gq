@@ -80,7 +80,8 @@ class BertVectorsFeaturizer(Featurizer):
             msg_tokens = []
             for t in msg.get("tokens"):
                 text = self._replace_number_blank(t.text)
-                msg_tokens.append(text)
+                if text != '':
+                    msg_tokens.append(text)
 
             all_tokens.append(msg_tokens)
 
