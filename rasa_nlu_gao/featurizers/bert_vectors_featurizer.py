@@ -35,7 +35,8 @@ class BertVectorsFeaturizer(Featurizer):
         "output_fmt": 'ndarray',
         "check_version": True,
         "timeout": 5000,
-        "identity": None
+        "identity": None,
+        "batch_size": 128
     }
 
     @classmethod
@@ -75,26 +76,40 @@ class BertVectorsFeaturizer(Featurizer):
     def _get_message_text(self, message):
         all_tokens = []
 
-        for t in message.get("tokens"):
-            text = self._replace_number(t.text)
-            all_tokens.append(text)
+        for msg in message:
+            msg_tokens = []
+            for t in msg.get("tokens"):
+                text = self._replace_number(t.text)
+                msg_tokens.append(text)
 
-        bert_embedding = self.bc.encode([all_tokens], is_tokenized=True)
+            all_tokens.append(msg_tokens)
+
+        bert_embedding = self.bc.encode(all_tokens, is_tokenized=True)
 
         return np.squeeze(bert_embedding)
 
 
     def train(self, training_data, cfg=None, **kwargs):
-        tokens_text = [self._get_message_text(example) for example in tqdm(training_data.intent_examples)]
+        batch_size = self.component_config['batch_size']
 
-        X = np.array(tokens_text)
+        epochs = len(training_data.intent_examples) // batch_size + \
+            int(len(training_data.intent_examples) % batch_size > 0)
 
-        for i, example in enumerate(training_data.intent_examples):
-            example.set("text_features", self._combine_with_existing_text_features(example, X[i]))
+        for ep in tqdm(range(epochs), desc="Epochs"):
+            end_idx = (ep + 1) * batch_size
+            start_idx = ep * batch_size
+            examples = training_data.intent_examples[start_idx:end_idx]
+            tokens_text = self._get_message_text(examples)
+            X = np.array(tokens_text)
+
+            for i, example in enumerate(examples):
+                example.set(
+                    "text_features", self._combine_with_existing_text_features(example, X[i]))
+
 
     def process(self, message, **kwargs):
         # type: (Message, **Any) -> None
-        message_text = self._get_message_text(message)
+        message_text = self._get_message_text([message])
 
         message.set("text_features", self._combine_with_existing_text_features(message, message_text))
 
