@@ -21,7 +21,6 @@ from typing import List, Any
 from typing import Optional
 from typing import Text
 
-
 def add_logging_option_arguments(parser, default=logging.WARNING):
     """Add options to an argument parser to configure logging levels."""
 
@@ -179,6 +178,7 @@ def class_from_module_path(module_path):
 def json_to_string(obj, **kwargs):
     indent = kwargs.pop("indent", 2)
     ensure_ascii = kwargs.pop("ensure_ascii", False)
+    
     return json.dumps(obj, indent=indent, ensure_ascii=ensure_ascii, **kwargs)
 
 

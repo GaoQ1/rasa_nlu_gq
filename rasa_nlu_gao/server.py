@@ -26,7 +26,6 @@ from rasa_nlu_gao.model import MINIMUM_COMPATIBLE_VERSION
 
 logger = logging.getLogger(__name__)
 
-
 def create_argument_parser():
     parser = argparse.ArgumentParser(description='parse incoming text')
 
@@ -236,6 +235,7 @@ class RasaNLU(object):
                 response = yield (self.data_router.parse(data) if self._testing
                                   else threads.deferToThread(
                                   self.data_router.parse, data))
+                
                 returnValue(json_to_string(response))
             except InvalidProjectError as e:
                 request.setResponseCode(404)
