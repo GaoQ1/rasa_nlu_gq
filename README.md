@@ -93,6 +93,9 @@ And returning structured data like:
     - name: "bert_vectors_featurizer"
       ip: '172.16.10.46'
       port: 5555
+      port_out: 5556
+      show_server_config: True
+      timeout: 10000
     - name: "intent_classifier_tensorflow_embedding"
     - name: "ner_crf"
     - name: "jieba_pseg_extractor"
@@ -119,6 +122,22 @@ And returning structured data like:
         "intra_op_parallelism_threads": 0,
         "allow_growth": True
       }
+  ```
+  - 新增了`embedding_bert_intent_classifier`分类器，对应的配置文件如下：
+  ```
+    language: "zh"
+
+    pipeline:
+    - name: "tokenizer_jieba"
+    - name: "bert_vectors_featurizer"
+      ip: '172.16.10.46'
+      port: 5555
+      port_out: 5556
+      show_server_config: True
+      timeout: 10000
+    - name: "intent_classifier_tensorflow_embedding_bert"
+    - name: "ner_crf"
+    - name: "jieba_pseg_extractor"
   ```
 
 ## Quick Install
