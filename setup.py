@@ -13,68 +13,10 @@ __version__ = 'v0.2.1'
 with io.open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
-tests_requires = [
-    "pytest",
-    "pytest-pep8",
-    "pytest-services",
-    "pytest-cov",
-    "pytest-twisted<1.6",
-    "treq"
-]
-
-install_requires = [
-    "pathlib",
-    "cloudpickle",
-    "gevent",
-    "klein",
-    "boto3",
-    "packaging",
-    "typing",
-    "future",
-    "six",
-    "tqdm",
-    "requests",
-    "jsonschema",
-    "matplotlib",
-    "numpy>=1.13",
-    "simplejson",
-    "pyyaml",
-    'coloredlogs',
-]
-
-extras_requires = {
-    'test': tests_requires,
-    'spacy': ["scikit-learn",
-              "sklearn-crfsuite",
-              "scipy",
-              "spacy>2.0",
-              ],
-    'tensorflow': ["scikit-learn",
-                   "sklearn-crfsuite",
-                   "scipy",
-                   "tensorflow"
-                   ],
-    'mitie': ["mitie"],
-}
-
 setup(
     name='rasa-nlu-gao',
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
-    classifiers=[
-        "Development Status :: 4 - Beta",
-        "Intended Audience :: Developers",
-        "License :: OSI Approved :: Apache Software License",
-        # supported python versions
-        "Programming Language :: Python",
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
-        "Topic :: Software Development :: Libraries",
-    ],
     version=__version__,
-    install_requires=install_requires,
-    tests_require=tests_requires,
-    extras_require=extras_requires,
     include_package_data=True,
     description="Rasa NLU a natural language parser for bots",
     long_description=long_description,
