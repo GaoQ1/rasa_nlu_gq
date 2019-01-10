@@ -68,12 +68,36 @@ class WordVectorsFeaturizer(Featurizer):
     def _replace_number(text):
         return re.sub(r'\b[0-9]+\b', '0', text)
 
+    def _chunk_max_pooling(self,data):
+        import torch
+        import torch.nn as  nn
+        all_data = np.zeros((len(data), data[0].shape[1]), dtype=np.float32)
+        for i in range(len(data)):
+            stride = data[i].shape[0]
+            m = nn.MaxPool1d(stride, stride)
+            arr = torch.from_numpy(data[i]).reshape(1, 1, -1)
+            arr = m(arr)
+            arr = arr.reshape(1, -1)
+            all_data[i] = arr[0].data.numpy()
+        return np.squeeze(all_data)
+
+    def _k_max_pooling(self,data):
+        import torch
+        all_data = np.zeros((len(data), data[0].shape[1]), dtype=np.float32)
+        for i in range(len(data)):
+            arr = torch.from_numpy(data[i]).reshape(-1)
+            stride = data[i].shape[1]
+            ind = arr.topk(stride)[1].sort()
+            all_data[i] = arr[ind[0]].data.numpy()
+        return np.squeeze(all_data)
+
+
     def _get_message_text(self, message):
         all_tokens = []
-
+        all_t=[]
         for t in message.get("tokens"):
             text = self._replace_number(t.text)
-
+            all_t.append(text)
             if self.category == 'word2vec':
                 unk_vec = np.zeros((self.model.vector_size,))
                 all_tokens.append(unk_vec)
@@ -81,11 +105,14 @@ class WordVectorsFeaturizer(Featurizer):
                 if text in self.model.vocab:
                     all_tokens.append(self.model[text])
 
-            elif self.category == 'elmo':
-                single_token = np.squeeze(self.model.sents2elmo(text)[0])
-                all_tokens.append(single_token)
+        all_tokens = [np.vstack(tuple(all_tokens))]
 
-        return np.array(all_tokens).mean(axis=0)
+        if self.category == 'elmo':
+            all_tokens = self.model.sents2elmo([all_t])
+
+        single_token = self._k_max_pooling(all_tokens)
+
+        return single_token
 
     def train(self, training_data, cfg=None, **kwargs):
         tokens_text = [self._get_message_text(example) for example in training_data.intent_examples]

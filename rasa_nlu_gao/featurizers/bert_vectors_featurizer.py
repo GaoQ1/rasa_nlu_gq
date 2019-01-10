@@ -82,8 +82,13 @@ class BertVectorsFeaturizer(Featurizer):
                 text = self._replace_number_blank(t.text)
                 if text != '':
                     msg_tokens.append(text)
-
-            all_tokens.append(msg_tokens)
+            a = str(msg_tokens)
+            a = a.replace('[', '')
+            a = a.replace(']', '')
+            a = a.replace(',', '')
+            a = a.replace('\'', '')
+            a = a.replace(' ', '')
+            all_tokens.append(list(a))
 
         bert_embedding = self.bc.encode(all_tokens, is_tokenized=True)
 
