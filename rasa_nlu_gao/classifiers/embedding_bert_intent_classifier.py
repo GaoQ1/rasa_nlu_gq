@@ -157,7 +157,8 @@ class EmbeddingBertIntentClassifier(Component):
                  graph=None,  # type: Optional[tf.Graph]
                  message_placeholder=None,  # type: Optional[tf.Tensor]
                  intent_placeholder=None,  # type: Optional[tf.Tensor]
-                 y_predict=None   # type: Optional[tf.Tensor]
+                 y_predict=None,   # type: Optional[tf.Tensor]
+                 drop_out=None  # type: Optional[tf.float32]
                  ):
         # type: (...) -> None
         """Declare instant variables with default values"""
@@ -192,6 +193,7 @@ class EmbeddingBertIntentClassifier(Component):
         self.a_in = message_placeholder
         self.b_in = intent_placeholder
         self.y_predict = y_predict
+        self.drop_out = drop_out
 
     # training data helpers:
     @staticmethod
@@ -264,7 +266,8 @@ class EmbeddingBertIntentClassifier(Component):
         train_sim = self.session.run(self.y_predict,
                                      feed_dict={self.a_in: X[ids],
                                                 self.b_in: all_Y,
-                                                is_training: False})
+                                                is_training: False,
+                                                self.drop_out: 0})
 
         train_acc = np.mean(np.argmax(train_sim, -1) == intents_for_X[ids])
         return train_acc
@@ -296,8 +299,10 @@ class EmbeddingBertIntentClassifier(Component):
 
             is_training = tf.placeholder_with_default(False, shape=())
 
+            self.drop_out = tf.placeholder(tf.float32, (), name='drop_out')
+
             # Create a graph for training
-            logits_train = conv_net(self.a_in, num_classes, self.num_hidden_layers, self.hidden_layer_size, self.C2, self.droprate, is_training=True)
+            logits_train = conv_net(self.a_in, num_classes, self.num_hidden_layers, self.hidden_layer_size, self.C2, self.drop_out, is_training=True)
 
             # Define loss and optimizer (with train logits, for dropout to take effect)
             loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=logits_train, labels=self.b_in)) + tf.losses.get_regularization_loss()
@@ -331,7 +336,8 @@ class EmbeddingBertIntentClassifier(Component):
                         {'loss': loss, 'train_op': train_op},
                         feed_dict={self.a_in: batch_a,
                                 self.b_in: batch_b,
-                                is_training: True}
+                                is_training: True,
+                                self.drop_out:self.droprate}
                     )
 
                     ep_loss += sess_out.get('loss') / batches_per_epoch
@@ -375,7 +381,7 @@ class EmbeddingBertIntentClassifier(Component):
             all_Y = self._create_all_Y(X.shape[0])
 
             with self.graph.as_default():
-                y_predict = self.session.run(self.y_predict, feed_dict={self.a_in: X, self.b_in: all_Y})
+                y_predict = self.session.run(self.y_predict, feed_dict={self.a_in: X, self.b_in: all_Y,self.drop_out: 0})
                 
                 intent_ids = y_predict[0][0]
                 intent_id_argmax = np.argmax(intent_ids, -1)
@@ -423,6 +429,10 @@ class EmbeddingBertIntentClassifier(Component):
             self.graph.clear_collection('y_predict')
             self.graph.add_to_collection('y_predict',
                                          self.y_predict)
+
+            self.graph.clear_collection('input_drop_rate')
+            self.graph.add_to_collection('input_drop_rate',
+                                         self.drop_out)
 
             saver = tf.train.Saver()
             saver.save(self.session, checkpoint)
@@ -479,6 +489,8 @@ class EmbeddingBertIntentClassifier(Component):
 
                 y_predict = tf.get_collection('y_predict')
 
+                drop_out = tf.get_collection('input_drop_rate')[0]
+
             with io.open(os.path.join(
                     model_dir,
                     cls.name + "_inv_intent_dict.pkl"), 'rb') as f:
@@ -496,7 +508,8 @@ class EmbeddingBertIntentClassifier(Component):
                     graph=graph,
                     message_placeholder=a_in,
                     intent_placeholder=b_in,
-                    y_predict=y_predict
+                    y_predict=y_predict,
+                    drop_out = drop_out
             )
 
         else:
