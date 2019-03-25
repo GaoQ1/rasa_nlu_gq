@@ -36,7 +36,6 @@ except ImportError:
     tf = None
 
 import GPUtil
-from bert_serving.client import BertClient
 from rasa_nlu_gao.models.lenet import conv_net
 
 class EmbeddingBertIntentClassifier(Component):
