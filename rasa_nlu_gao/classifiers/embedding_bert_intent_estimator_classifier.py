@@ -13,7 +13,7 @@ from typing import List, Text, Any, Optional, Dict
 from rasa_nlu_gao.classifiers import INTENT_RANKING_LENGTH
 from rasa_nlu_gao.components import Component
 from multiprocessing import cpu_count
-from tensorflow.contrib import predictor
+from tensorflow.contrib import predictor as Pred
 import numpy as np
 
 try:
@@ -47,31 +47,20 @@ class EmbeddingBertIntentEstimatorClassifier(Component):
 
     defaults = {
         # nn architecture
-        "num_hidden_layers": 2,
-        "hidden_layer_size": [768, 256],
         "batch_size": 256,
         "epochs": 200,
-        "learning_rate": 0.001,
-
-        # regularization
-        "C2": 0.005,
-        "droprate": 0.5,
 
         # flag if tokenize intents
         "intent_tokenization_flag": False,
         "intent_split_symbol": '_',
-
-        # visualization of accuracy
-        "evaluate_every_num_epochs": 10,  # small values may hurt performance
-        "evaluate_on_num_examples": 1000,  # large values may hurt performance
 
         "config_proto": {
             "device_count": cpu_count(),
             "inter_op_parallelism_threads": 0,
             "intra_op_parallelism_threads": 0,
             "allow_growth": True,
-            "allocator_type": 'BFC',
-            "per_process_gpu_memory_fraction": 0.5
+            "allocator_type": 'BFC',               # best-fit with coalescing algorithm 内存分配、释放、碎片管理
+            "per_process_gpu_memory_fraction": 0.5 # this means use 50% of your gpu memory in max
         }
     }
 
@@ -81,16 +70,8 @@ class EmbeddingBertIntentEstimatorClassifier(Component):
         return ["tensorflow"]
 
     def _load_nn_architecture_params(self):
-        self.num_hidden_layers = self.component_config['num_hidden_layers']
-        self.hidden_layer_size = self.component_config['hidden_layer_size']
-
         self.batch_size = self.component_config['batch_size']
         self.epochs = self.component_config['epochs']
-        self.learning_rate = self.component_config['learning_rate']
-
-    def _load_regularization_params(self):
-        self.C2 = self.component_config['C2']
-        self.droprate = self.component_config['droprate']
 
     def _load_flag_if_tokenize_intents(self):
         self.intent_tokenization_flag = self.component_config['intent_tokenization_flag']
@@ -99,46 +80,6 @@ class EmbeddingBertIntentEstimatorClassifier(Component):
             logger.warning("intent_split_symbol was not specified, "
                            "so intent tokenization will be ignored")
             self.intent_tokenization_flag = False
-
-    def _load_visual_params(self):
-        self.evaluate_every_num_epochs = self.component_config[
-                                            'evaluate_every_num_epochs']
-        if self.evaluate_every_num_epochs < 1:
-            self.evaluate_every_num_epochs = self.epochs
-        self.evaluate_on_num_examples = self.component_config[
-                                            'evaluate_on_num_examples']
-
-    @staticmethod
-    def _check_hidden_layer_sizes(num_layers, layer_size, name=''):
-        num_layers = int(num_layers)
-
-        if num_layers < 0:
-            logger.error("num_hidden_layers_{} = {} < 0."
-                         "Set it to 0".format(name, num_layers))
-            num_layers = 0
-
-        if isinstance(layer_size, list) and len(layer_size) != num_layers:
-            if len(layer_size) == 0:
-                raise ValueError("hidden_layer_size_{} = {} "
-                                 "is an empty list, "
-                                 "while num_hidden_layers_{} = {} > 0"
-                                 "".format(name, layer_size,
-                                           name, num_layers))
-
-            logger.error("The length of hidden_layer_size_{} = {} "
-                         "does not correspond to num_hidden_layers_{} "
-                         "= {}. Set hidden_layer_size_{} to "
-                         "the first element = {} for all layers"
-                         "".format(name, len(layer_size),
-                                   name, num_layers,
-                                   name, layer_size[0]))
-
-            layer_size = layer_size[0]
-
-        if not isinstance(layer_size, list):
-            layer_size = [layer_size for _ in range(num_layers)]
-
-        return num_layers, layer_size
 
     @staticmethod
     def _check_tensorflow():
@@ -164,19 +105,8 @@ class EmbeddingBertIntentEstimatorClassifier(Component):
         # nn architecture parameters
         self._load_nn_architecture_params()
 
-        # regularization
-        self._load_regularization_params()
         # flag if tokenize intents
         self._load_flag_if_tokenize_intents()
-        # visualization of accuracy
-        self._load_visual_params()
-
-        # check if hidden_layer_sizes are valid
-        (self.num_hidden_layers,
-         self.hidden_layer_size) = self._check_hidden_layer_sizes(
-                                        self.num_hidden_layers,
-                                        self.hidden_layer_size,
-                                        name='hidden_layer')
 
         # transform numbers to intents
         self.inv_intent_dict = inv_intent_dict
@@ -251,6 +181,16 @@ class EmbeddingBertIntentEstimatorClassifier(Component):
         return X, Y, intents_for_X
 
     def input_fn(self,features, labels, batch_size, shuffle_num, mode):
+        """
+         build tf.data set for input pipeline
+
+        :param features: type dict() , define input x structure for parsing
+        :param labels: type np.array input label
+        :param batch_size: type int number ,input batch_size
+        :param shuffle_num: type int number , random select the data
+        :param mode: type string ,tf.estimator.ModeKeys.TRAIN or tf.estimator.ModeKeys.PREDICT
+        :return: set() with type of (tf.data , and labels)
+        """
         dataset = tf.data.Dataset.from_tensor_slices((features, labels))
         if mode == tf.estimator.ModeKeys.TRAIN:
             dataset = dataset.shuffle(shuffle_num).batch(batch_size).repeat(self.epochs)
@@ -280,33 +220,35 @@ class EmbeddingBertIntentEstimatorClassifier(Component):
 
         num_classes = len(intent_dict)
 
-
+        # define classes number to classified
         head = tf.contrib.estimator.multi_class_head(n_classes=num_classes)
 
+        # define feature spec for input x parsing
         feature_names = ['a_in']
         self.feature_columns = [tf.feature_column.numeric_column(key=k,shape=[1, X.shape[1]]) for k in feature_names]
 
         x_tensor = {'a_in': X}
         intents_for_X = intents_for_X.astype(np.int32)
 
-
+        # set gpu and tf graph confing
         tf.logging.set_verbosity(tf.logging.INFO)
         config_proto = self.get_config_proto(self.component_config)
 
-        #sparse_softmax_cross_entropy
-
+        # sparse_softmax_cross_entropy , build linear classified model
         self.estimator = tf.contrib.estimator.LinearEstimator(
                                                      head = head,
                                                      feature_columns=self.feature_columns,
                                                      optimizer='Ftrl',
                                                      config=tf.estimator.RunConfig(session_config=config_proto)
                                                  )
+        # train model
         self.estimator.train(input_fn=lambda: self.input_fn(x_tensor,
                                                   intents_for_X,
                                                   self.batch_size,
                                                   shuffle_num=1000,
                                                   mode = tf.estimator.ModeKeys.TRAIN),
                                                   max_steps=2000)
+        # evaluate model
         results = self.estimator.evaluate(input_fn=lambda: self.input_fn(x_tensor,
                                                   intents_for_X,
                                                   self.batch_size,
@@ -332,12 +274,15 @@ class EmbeddingBertIntentEstimatorClassifier(Component):
             X = message.get("text_features").tolist()
             examples = []
             feature = {}
+            # convert input x to tf.feature with float feature spec
             feature['a_in'] = tf.train.Feature(float_list=tf.train.FloatList(value=X))
+            # build tf.example for prediction
             example = tf.train.Example(
                 features=tf.train.Features(
                     feature=feature
                 )
             )
+            # serialize tf.example to string
             examples.append(example.SerializeToString())
 
             # Make predictions.
@@ -368,9 +313,13 @@ class EmbeddingBertIntentEstimatorClassifier(Component):
         if self.estimator is None:
             return {"classifier_file": None}
 
+        # build feature spec for tf.example parsing
         feature_spec = tf.feature_column.make_parse_example_spec(self.feature_columns)
+        # build tf.example parser
         serving_input_receiver_fn = tf.estimator.export.build_parsing_serving_input_receiver_fn(feature_spec)
+        # export tf model
         path = self.estimator.export_savedmodel(model_dir, serving_input_receiver_fn)
+        # decode model path to string
         file_dir = os.path.basename(path).decode('utf-8')
 
 
@@ -418,8 +367,8 @@ class EmbeddingBertIntentEstimatorClassifier(Component):
 
         if model_dir and meta.get("classifier_file"):
             file_name = meta.get("classifier_file")
-
-            predict = predictor.from_saved_model(export_dir=os.path.join(model_dir,file_name),config=config_proto)
+            # tensorflow.contrib.predictor to load the model file which may has 10x speed up in predict time
+            predict = Pred.from_saved_model(export_dir=os.path.join(model_dir,file_name),config=config_proto)
 
             with io.open(os.path.join(
                     model_dir,
