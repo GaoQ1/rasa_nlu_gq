@@ -139,6 +139,24 @@ And returning structured data like:
     - name: "ner_crf"
     - name: "jieba_pseg_extractor"
   ```
+  
+   - 在基础词向量使用bert的情况下，后端的分类器使用tensorflow高级api完成，tf.estimator,tf.data,tf.example,tf.saved_model
+   `intent_estimator_classifier_tensorflow_embedding_bert`分类器，对应的配置文件如下：
+  ```
+  language: "zh"
+
+  pipeline:
+  - name: "tokenizer_jieba"
+  - name: "bert_vectors_featurizer"
+    ip: '127.0.0.1'
+    port: 5555
+    port_out: 5556
+    show_server_config: True
+    timeout: 10000
+  - name: "intent_estimator_classifier_tensorflow_embedding_bert"
+  - name: "nlp_spacy"
+  - name: "ner_crf"
+  ```
 
 ## Quick Install
 ```

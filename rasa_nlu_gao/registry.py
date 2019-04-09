@@ -39,7 +39,7 @@ from rasa_nlu_gao.featurizers.intent_featurizer_wordvector import WordVectorsFea
 from rasa_nlu_gao.featurizers.bert_vectors_featurizer import BertVectorsFeaturizer  # customize
 
 from rasa_nlu_gao.classifiers.embedding_bert_intent_classifier import EmbeddingBertIntentClassifier  # customize
-
+from rasa_nlu_gao.classifiers.embedding_bert_intent_estimator_classifier import EmbeddingBertIntentEstimatorClassifier #customize
 
 from rasa_nlu_gao.featurizers.mitie_featurizer import MitieFeaturizer
 from rasa_nlu_gao.featurizers.ngram_featurizer import NGramFeaturizer
@@ -76,7 +76,7 @@ component_classes = [
     CountVectorsFeaturizer,
     MitieTokenizer, SpacyTokenizer, WhitespaceTokenizer, JiebaTokenizer,
     SklearnIntentClassifier, MitieIntentClassifier, KeywordIntentClassifier,
-    EmbeddingIntentClassifier
+    EmbeddingIntentClassifier,EmbeddingBertIntentEstimatorClassifier
 ]
 
 # Mapping from a components name to its class to allow name based lookup.
@@ -93,7 +93,7 @@ registered_pipeline_templates = {
         "intent_entity_featurizer_regex",
         "ner_crf",
         "ner_synonyms",
-        "intent_classifier_sklearn",
+        "intent_classifier_sklearn"
     ],
     "keyword": [
         "intent_classifier_keyword",
@@ -102,7 +102,8 @@ registered_pipeline_templates = {
         "tokenizer_whitespace",
         "ner_crf",
         "intent_featurizer_count_vectors",
-        "intent_classifier_tensorflow_embedding"
+        "intent_classifier_tensorflow_embedding",
+        "intent_estimator_classifier_tensorflow_embedding_bert"
     ]
 }
 
