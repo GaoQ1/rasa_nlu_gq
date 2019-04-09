@@ -148,12 +148,12 @@ pip install rasa-nlu-gao
 ## 🤖 Running of the bot
 To train the NLU model:
 ```
-python -m rasa_nlu_gao.train -c sample_configs/config_embedding_bilstm.yml --data data/examples/rasa/rasa_dataset_training.json --path models
+python3 -m rasa_nlu_gao.train -c sample_configs/config_embedding_bilstm.yml --data data/examples/rasa/rasa_dataset_training.json --path models
 ```
 
 To run the NLU model:
 ```
-python -m rasa_nlu_gao.server -c sample_configs/config_embedding_bilstm.yml --path models
+python3 -m rasa_nlu_gao.server -c sample_configs/config_embedding_bilstm.yml --path models
 ```
 
 ## Some Examples

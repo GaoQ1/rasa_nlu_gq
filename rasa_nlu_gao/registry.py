@@ -32,6 +32,7 @@ from rasa_nlu_gao.extractors.crf_entity_extractor import CRFEntityExtractor
 
 from rasa_nlu_gao.extractors.bilstm_crf_entity_extractor import BilstmCRFEntityExtractor # customize
 from rasa_nlu_gao.extractors.jieba_pseg_extractor import JiebaPsegExtractor  # customize
+from rasa_nlu_gao.extractors.pyltp_extractor import PyLTPEntityExtractor  # customize
 from rasa_nlu_gao.classifiers.entity_edit_intent import EntityEditIntent  # customize
 
 from rasa_nlu_gao.featurizers.intent_featurizer_wordvector import WordVectorsFeaturizer  # customize
@@ -69,6 +70,7 @@ component_classes = [
     WordVectorsFeaturizer,  # customize
     BertVectorsFeaturizer,  # customize
     EmbeddingBertIntentClassifier,  # customize
+    PyLTPEntityExtractor, # customize
     EntitySynonymMapper,
     SpacyFeaturizer, MitieFeaturizer, NGramFeaturizer, RegexFeaturizer,
     CountVectorsFeaturizer,

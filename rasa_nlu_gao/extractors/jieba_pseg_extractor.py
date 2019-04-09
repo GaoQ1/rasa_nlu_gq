@@ -44,13 +44,14 @@ class JiebaPsegExtractor(EntityExtractor):
         # type: (Message, **Any) -> None
 
         extracted = self.add_extractor_name(self.posseg_cut_examples(message))
-
+        
         message.set("entities", extracted, add_to_output=True)
 
 
     def posseg_cut_examples(self, example):
         raw_entities = example.get("entities", [])
         example_posseg = self.posseg(example.text)
+
         for (item_posseg, start, end) in example_posseg:
             part_of_speech = self.component_config["part_of_speech"]
             for (word_posseg, flag_posseg) in item_posseg:
