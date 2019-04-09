@@ -54,6 +54,11 @@ class PyLTPEntityExtractor(EntityExtractor):
                 self.model_path+"/pos.model", self.dictionary_path)
 
     @classmethod
+    def create(cls, cfg):
+        component_conf = cfg.for_component(cls.name, cls.defaults)
+        return PyLTPEntityExtractor(component_conf)
+
+    @classmethod
     def required_packages(cls):
         # type: () -> List[Text]
         return ["pyltp"]
@@ -93,7 +98,6 @@ class PyLTPEntityExtractor(EntityExtractor):
 
     @classmethod
     def load(cls,
-             meta: Dict[Text, Any],
              model_dir=None,  # type: Optional[Text]
              model_metadata=None,  # type: Optional[Metadata]
              cached_component=None,  # type: Optional[Component]
@@ -101,4 +105,5 @@ class PyLTPEntityExtractor(EntityExtractor):
              ):
 
         meta = model_metadata.for_component(cls.name)
+
         return cls(meta)

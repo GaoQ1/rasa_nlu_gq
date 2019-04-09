@@ -171,7 +171,7 @@ python3 -m rasa_nlu_gao.train -c sample_configs/config_embedding_bilstm.yml --da
 
 To run the NLU model:
 ```
-python3 -m rasa_nlu_gao.server -c sample_configs/config_embedding_bilstm.yml --path models
+python3 -m rasa_nlu_gao.server -c sample_configs/config_embedding_bilstm.yml -P 8000 --path models
 ```
 
 ## Some Examples
