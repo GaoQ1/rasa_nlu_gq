@@ -31,7 +31,7 @@ class PyLTPEntityExtractor(EntityExtractor):
     defaults = {
         "model_path": None,  # Nh: name Ni: organization Ns: place
         "part_of_speech": ['nh'],
-        "rename_to_entity": ['username'], # rename 'nh' to 'username'
+        "rename_to_entity": ['username'],  # rename 'nh' to 'username'
         "dictionary_path": None  # customize dictionary
     }
 
@@ -77,6 +77,7 @@ class PyLTPEntityExtractor(EntityExtractor):
         result = zip(words, postags)
 
         raw_entities = message.get("entities", [])
+
         for word, postag in result:
             part_of_speech = self.component_config["part_of_speech"]
             rename_to_entity = self.component_config["rename_to_entity"]
@@ -88,12 +89,19 @@ class PyLTPEntityExtractor(EntityExtractor):
                 entity_index = part_of_speech.index(postag)
                 rename_entity = rename_to_entity[entity_index] or postag
 
-                raw_entities.append({
-                    'start': start,
-                    'end': end,
-                    'value': word,
-                    'entity': rename_entity
-                })
+                hasAlreadyExtractor = False
+
+                for obj in raw_entities:
+                    if obj and obj['value'] == word:
+                        hasAlreadyExtractor = True
+
+                if not hasAlreadyExtractor:
+                    raw_entities.append({
+                        'start': start,
+                        'end': end,
+                        'value': word,
+                        'entity': rename_entity
+                    })
         return raw_entities
 
     @classmethod
