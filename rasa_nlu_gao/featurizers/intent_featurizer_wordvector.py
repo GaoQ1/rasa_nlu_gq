@@ -17,6 +17,7 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
+
 class WordVectorsFeaturizer(Featurizer):
     name = "intent_featurizer_wordvector"
 
@@ -27,7 +28,9 @@ class WordVectorsFeaturizer(Featurizer):
     defaults = {
         "vector": None,
         "elmo": None,
-        "limit": None
+        "limit": None,
+        "bert": None,
+        "bert_type": 'mean',
     }
 
     @classmethod
@@ -48,10 +51,11 @@ class WordVectorsFeaturizer(Featurizer):
 
         vector_file = component_conf.get("vector")
         elmo_file = component_conf.get("elmo")
+        bert_file = component_conf.get("bert")
         
-        if not vector_file and not elmo_file:
+        if not vector_file and not elmo_file and not bert_file:
             raise Exception("The WordVectorsFeaturizer component needs "
-                            "the configuration value either word2vec vector or elmo model.")
+                            "the configuration value either word2vec vector or elmo model or bert model.")
         
         if vector_file:
             import gensim
@@ -61,6 +65,10 @@ class WordVectorsFeaturizer(Featurizer):
             from rasa_nlu_gao.models.elmo_cn import Embedder
             model = Embedder(elmo_file)
             category = 'elmo'
+        elif bert_file:
+            from rasa_nlu_gao.models.bert.encoder import Encoder
+            model = Encoder(bert_file)
+            category = 'bert'
 
         return WordVectorsFeaturizer(component_conf, model, category)
 
@@ -68,7 +76,7 @@ class WordVectorsFeaturizer(Featurizer):
     def _replace_number(text):
         return re.sub(r'\b[0-9]+\b', '0', text)
 
-    def _chunk_max_pooling(self,data):
+    def _chunk_max_pooling(self, data):
         import torch
         import torch.nn as  nn
         all_data = np.zeros((len(data), data[0].shape[1]), dtype=np.float32)
@@ -81,7 +89,7 @@ class WordVectorsFeaturizer(Featurizer):
             all_data[i] = arr[0].data.numpy()
         return np.squeeze(all_data)
 
-    def _k_max_pooling(self,data):
+    def _k_max_pooling(self, data):
         import torch
         all_data = np.zeros((len(data), data[0].shape[1]), dtype=np.float32)
         for i in range(len(data)):
@@ -91,31 +99,39 @@ class WordVectorsFeaturizer(Featurizer):
             all_data[i] = arr[ind[0]].data.numpy()
         return np.squeeze(all_data)
 
-
     def _get_message_text(self, message):
         all_tokens = []
         all_t=[]
-        for t in message.get("tokens"):
-            text = self._replace_number(t.text)
-            all_t.append(text)
+
+        if self.category == 'bert':
+            tokens_temp = self.model.encode([message.text])
+            bert_type = self.component_config['bert_type']
+
+            single_token = tokens_temp.mean(0) if bert_type == 'mean' else tokens_temp.max(0)
+        else:
+            for t in message.get("tokens"):
+                text = self._replace_number(t.text)
+                all_t.append(text)
+
+                if self.category == 'word2vec':
+                    unk_vec = np.zeros((self.model.vector_size,))
+                    all_tokens.append(unk_vec)
+
+                    if text in self.model.vocab:
+                        all_tokens.append(self.model[text])
+
             if self.category == 'word2vec':
-                unk_vec = np.zeros((self.model.vector_size,))
-                all_tokens.append(unk_vec)
-
-                if text in self.model.vocab:
-                    all_tokens.append(self.model[text])
-
-        all_tokens = [np.vstack(tuple(all_tokens))]
-
-        if self.category == 'elmo':
-            all_tokens = self.model.sents2elmo([all_t])
-
-        single_token = self._k_max_pooling(all_tokens)
+                all_tokens = [np.vstack(tuple(all_tokens))]
+                single_token = self._k_max_pooling(all_tokens)
+            elif self.category == 'elmo':
+                all_tokens = self.model.sents2elmo([all_t])
+                single_token = self._k_max_pooling(all_tokens)
 
         return single_token
 
     def train(self, training_data, cfg=None, **kwargs):
         tokens_text = [self._get_message_text(example) for example in training_data.intent_examples]
+
         X = np.array(tokens_text)
 
         for i, example in enumerate(training_data.intent_examples):
@@ -139,6 +155,7 @@ class WordVectorsFeaturizer(Featurizer):
         if model_dir:
             vector_file = meta.get("vector")
             elmo_file = meta.get("elmo")
+            bert_file = meta.get("bert")
 
             if vector_file:
                 import gensim
@@ -148,6 +165,10 @@ class WordVectorsFeaturizer(Featurizer):
                 from rasa_nlu_gao.models.elmo_cn import Embedder
                 model = Embedder(elmo_file)
                 category = 'elmo'
+            elif bert_file:
+                from rasa_nlu_gao.models.bert.encoder import Encoder
+                model = Encoder(bert_file)
+                category = 'bert'
 
             return WordVectorsFeaturizer(
                 component_config=meta,
