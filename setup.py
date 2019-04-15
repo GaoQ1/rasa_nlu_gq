@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 here = os.path.abspath(os.path.dirname(__file__))
 
 # Avoids IDE errors, but actual version is read from version.py
-__version__ = 'v0.2.5'
+__version__ = 'v0.2.6'
 # exec(open('rasa_nlu_gao/version.py').read())
 
 # Get the long description from the README file
