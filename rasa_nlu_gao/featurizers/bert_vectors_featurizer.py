@@ -20,12 +20,11 @@ from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
+
 class BertVectorsFeaturizer(Featurizer):
     name = "bert_vectors_featurizer"
 
     provides = ["text_features"]
-
-    requires = ["tokens"]
 
     defaults = {
         "ip": 'localhost',
@@ -69,31 +68,15 @@ class BertVectorsFeaturizer(Featurizer):
         component_conf = cfg.for_component(cls.name, cls.defaults)
         return BertVectorsFeaturizer(component_conf)
 
-    @staticmethod
-    def _replace_number_blank(text):
-        return re.sub(r'\b[0-9]+\b', '0', text).replace(' ', '')
-
     def _get_message_text(self, message):
         all_tokens = []
 
         for msg in message:
-            msg_tokens = []
-            for t in msg.get("tokens"):
-                text = self._replace_number_blank(t.text)
-                if text != '':
-                    msg_tokens.append(text)
-            a = str(msg_tokens)
-            a = a.replace('[', '')
-            a = a.replace(']', '')
-            a = a.replace(',', '')
-            a = a.replace('\'', '')
-            a = a.replace(' ', '')
-            all_tokens.append(list(a))
+            all_tokens.append(msg.text)
 
-        bert_embedding = self.bc.encode(all_tokens, is_tokenized=True)
+        bert_embedding = self.bc.encode(all_tokens, is_tokenized=False)
 
         return np.squeeze(bert_embedding)
-
 
     def train(self, training_data, cfg=None, **kwargs):
         batch_size = self.component_config['batch_size']
@@ -112,12 +95,12 @@ class BertVectorsFeaturizer(Featurizer):
                 example.set(
                     "text_features", self._combine_with_existing_text_features(example, X[i]))
 
-
     def process(self, message, **kwargs):
         # type: (Message, **Any) -> None
         message_text = self._get_message_text([message])
 
-        message.set("text_features", self._combine_with_existing_text_features(message, message_text))
+        message.set("text_features", self._combine_with_existing_text_features(
+            message, message_text))
 
     @classmethod
     def load(cls,
