@@ -1,4 +1,5 @@
 build
 dist
-__phcache__
+__pycache__
 .gitignore
+*.egg-info
