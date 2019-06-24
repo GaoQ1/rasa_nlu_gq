@@ -19,14 +19,17 @@ except ImportError:
 from builtins import str
 from typing import Any, Dict, List, Optional, Text, Tuple
 
-from rasa_nlu_gao.extractors import EntityExtractor
-from rasa_nlu_gao.model import Metadata
-from rasa_nlu_gao.training_data import Message
+from rasa.nlu.extractors import EntityExtractor
+from rasa.nlu.model import Metadata
+from rasa.nlu.training_data import Message
 
-from rasa_nlu_gao.utils.bilstm_utils import char_mapping, tag_mapping, prepare_dataset, BatchManager, iob_iobes, iob2, save_model, create_model, input_from_line
+from rasa_nlu_gao.utils.bilstm_utils import \
+    char_mapping, tag_mapping, prepare_dataset, BatchManager, iob_iobes, \
+    iob2, save_model, create_model, input_from_line
 
-from rasa_nlu_gao.models.model import Model
+from rasa_nlu_gao.models.bilstm_model import Model
 from multiprocessing import cpu_count
+import jieba
 
 logger = logging.getLogger(__name__)
 
@@ -40,9 +43,8 @@ try:
 except ImportError:
     tf = None
 
-class BilstmCRFEntityExtractor(EntityExtractor):
-    name = "ner_bilstm_crf"
 
+class BilstmCRFEntityExtractor(EntityExtractor):
     provides = ["entities"]
 
     requires = ["tokens"]
@@ -68,57 +70,59 @@ class BilstmCRFEntityExtractor(EntityExtractor):
             "inter_op_parallelism_threads": 0,
             "intra_op_parallelism_threads": 0,
             "allow_growth": True
-        }
+        },
+        "dictionary_path": None,
     }
-    
 
     def __init__(self,
-                component_config=None,
-                ent_tagger=None,
-                session=None,
-                char_to_id=None,
-                id_to_tag=None):
+                 component_config=None,
+                 ent_tagger=None,
+                 session=None,
+                 char_to_id=None,
+                 id_to_tag=None):
         super(BilstmCRFEntityExtractor, self).__init__(component_config)
 
-        self.component_config = component_config
-        self.ent_tagger = ent_tagger # 指的是训练好的model
+        self.ent_tagger = ent_tagger  # 指的是训练好的model
         self.session = session
         self.char_to_id = char_to_id
         self.id_to_tag = id_to_tag
+        dictionary_path = self.component_config.get('dictionary_path')
+
+        if dictionary_path:
+            jieba.load_userdict(dictionary_path)
+
+        self.seg = jieba
 
     def train(self, training_data, config, **kwargs):
-        self.component_config = config.for_component(self.name, self.defaults)
+        filtered_entity_examples = \
+            self.filter_trainable_entities(training_data.training_examples)
 
-        if training_data.entity_examples:
-            filtered_entity_examples = self.filter_trainable_entities(training_data.training_examples)
+        train_sentences = self._create_dataset(filtered_entity_examples)
 
-            train_sentences = self._create_dataset(filtered_entity_examples)
+        # 检测并维护数据集的tag标记
+        self.update_tag_scheme(
+            train_sentences, self.component_config["tag_schema"])
 
-            # 检测并维护数据集的tag标记
-            self.update_tag_scheme(
-                train_sentences, self.component_config["tag_schema"])
+        _c, char_to_id, id_to_char = char_mapping(
+            train_sentences, self.component_config["lower"])
 
-            _c, char_to_id, id_to_char = char_mapping(
-                train_sentences, self.component_config["lower"])
+        tag_to_id, id_to_tag = tag_mapping(train_sentences)
+        self.char_to_id = char_to_id
+        self.id_to_tag = id_to_tag
 
-            tag_to_id, id_to_tag = tag_mapping(train_sentences)
-            
-            self.char_to_id = char_to_id
-            self.id_to_tag = id_to_tag
+        self.component_config["num_chars"] = len(char_to_id)
+        self.component_config["num_tags"] = len(tag_to_id)
 
-            self.component_config["num_chars"] = len(char_to_id)
-            self.component_config["num_tags"] = len(tag_to_id)
-            
-            train_data = prepare_dataset(
-                train_sentences, char_to_id, tag_to_id, self.component_config["lower"]
-            )
+        train_data = prepare_dataset(
+            train_sentences, char_to_id,
+            tag_to_id, self.seg,
+            self.component_config["lower"])
 
-            # 获取可供模型训练的单个批次数据
-            train_manager = BatchManager(
-                train_data, self.component_config["batch_size"])
+        # 获取可供模型训练的单个批次数据
+        train_manager = BatchManager(
+            train_data, self.component_config["batch_size"])
 
-            self._train_model(train_manager)
-
+        self._train_model(train_manager)
 
     def _create_dataset(self, examples):
         dataset = []
@@ -127,7 +131,6 @@ class BilstmCRFEntityExtractor(EntityExtractor):
             dataset.append(self._predata(
                 example.text, entity_offsets, self.component_config["zeros"]))
         return dataset
-
 
     @staticmethod
     def _convert_example(example):
@@ -174,14 +177,16 @@ class BilstmCRFEntityExtractor(EntityExtractor):
             device_count={
                 'CPU': component_config['config_proto']['device_count']
             },
-            inter_op_parallelism_threads=component_config['config_proto']['inter_op_parallelism_threads'],
-            intra_op_parallelism_threads=component_config['config_proto']['intra_op_parallelism_threads'],
+            inter_op_parallelism_threads=component_config
+            ['config_proto']['inter_op_parallelism_threads'],
+            intra_op_parallelism_threads=component_config
+            ['config_proto']['intra_op_parallelism_threads'],
             gpu_options={
-                'allow_growth': component_config['config_proto']['allow_growth']
+                'allow_growth':
+                    component_config['config_proto']['allow_growth']
             }
         )
         return config
-
 
     def update_tag_scheme(self, sentences, tag_scheme):
         for i, s in enumerate(sentences):
@@ -227,53 +232,58 @@ class BilstmCRFEntityExtractor(EntityExtractor):
                 if step % self.component_config["steps_check"] == 0:
                     iteration = step // steps_per_epoch + 1
 
-                    logger.warning("iteration:{} step:{}/{}, "
-                                "NER loss:{:>9.6f}".format(
-                                    iteration, step % steps_per_epoch, steps_per_epoch, np.mean(loss_slot)))
+                    logger.warning("iteration:{} step:{}/{}, NER loss:{:>9.6f}"
+                                   "".format(iteration,
+                                             step % steps_per_epoch,
+                                             steps_per_epoch,
+                                             np.mean(loss_slot)))
                     loss_slot = []
-
 
     def process(self, message, **kwargs):
         # type: (Message, **Any) -> None
         extracted = self.add_extractor_name(self.extract_entities(message))
-        message.set("entities", message.get("entities", []) + extracted, add_to_output=True)
+        message.set("entities",
+                    message.get("entities", []) + extracted,
+                    add_to_output=True)
 
     def extract_entities(self, message):
         # type: (Message) -> List[Dict[Text, Any]]
         """Take a sentence and return entities in json format"""
+
         if self.ent_tagger is not None:
-            result =  self.ent_tagger.evaluate_line(
-                self.session, input_from_line(message.text, self.char_to_id), self.id_to_tag)
+            result = self.ent_tagger.evaluate_line(
+                self.session,
+                input_from_line(message.text, self.char_to_id, self.seg),
+                self.id_to_tag)
             return result.get("entities", [])
         else:
             return []
 
-
     @classmethod
     def load(cls,
-             model_dir=None,  # type: Text
-             model_metadata=None,  # type: Metadata
-             cached_component=None,  # type: Optional[CRFEntityExtractor]
-             **kwargs  # type: **Any
-             ):
-        meta = model_metadata.for_component(cls.name)
+             meta: Dict[Text, Any],
+             model_dir: Text = None,
+             model_metadata: Metadata = None,
+             cached_component: Optional['BilstmCRFEntityExtractor'] = None,
+             **kwargs: Any
+             ) -> 'BilstmCRFEntityExtractor':
 
         tf_config = cls.get_config_proto(meta)
         sess = tf.Session(config=tf_config)
 
         model = Model(meta)
-        if model_dir and meta.get("classifier_file"):
-            file_name = meta.get("classifier_file")
-            checkpoint = os.path.join(model_dir, file_name)
+        if model_dir and meta.get("file"):
+            file_name = meta.get("file")
+            checkpoint = os.path.join(model_dir, file_name + '.ckpt')
             model.saver.restore(sess, checkpoint)
 
             with io.open(os.path.join(
                     model_dir,
-                    cls.name + "_char_to_id.pkl"), 'rb') as f:
+                    file_name + "_char_to_id.pkl"), 'rb') as f:
                 char_to_id = pickle.load(f)
             with io.open(os.path.join(
                     model_dir,
-                    cls.name + "_id_to_tag.pkl"), 'rb') as f:
+                    file_name + "_id_to_tag.pkl"), 'rb') as f:
                 id_to_tag = pickle.load(f)
 
             return BilstmCRFEntityExtractor(
@@ -286,13 +296,14 @@ class BilstmCRFEntityExtractor(EntityExtractor):
         else:
             return BilstmCRFEntityExtractor(meta)
 
-    def persist(self, model_dir):
+    def persist(self,
+                file_name: Text, model_dir: Text) -> Optional[Dict[Text, Any]]:
         # type: (Text) -> Optional[Dict[Text, Any]]
         """Persist this model into the passed directory.
         Return the metadata necessary to load the model again."""
         if self.session is None:
             return {"classifier_file": None}
-        checkpoint = os.path.join(model_dir, self.name + ".ckpt")
+        checkpoint = os.path.join(model_dir, file_name + ".ckpt")
 
         try:
             os.makedirs(os.path.dirname(checkpoint))
@@ -306,11 +317,11 @@ class BilstmCRFEntityExtractor(EntityExtractor):
 
         with io.open(os.path.join(
                 model_dir,
-                self.name + "_char_to_id.pkl"), 'wb') as f:
+                file_name + "_char_to_id.pkl"), 'wb') as f:
             pickle.dump(self.char_to_id, f)
         with io.open(os.path.join(
                 model_dir,
-                self.name + "_id_to_tag.pkl"), 'wb') as f:
+                file_name + "_id_to_tag.pkl"), 'wb') as f:
             pickle.dump(self.id_to_tag, f)
 
-        return {"classifier_file": self.name + ".ckpt"}
+        return {"file": file_name}

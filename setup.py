@@ -6,19 +6,27 @@ from setuptools import setup, find_packages
 here = os.path.abspath(os.path.dirname(__file__))
 
 # Avoids IDE errors, but actual version is read from version.py
-__version__ = 'v0.2.7'
-# exec(open('rasa_nlu_gao/version.py').read())
+__version__ = None
+with open("version.py") as f:
+    exec(f.read())
 
 # Get the long description from the README file
 with io.open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
+install_requires = [
+    "rasa~=1.1.3",
+    "jieba~=0.39",
+    "bert-serving-client==1.8.9"
+]
+
 setup(
     name='rasa-nlu-gao',
-    packages=find_packages(exclude=['contrib', 'docs', 'tests']),
+    packages=find_packages(),
     version=__version__,
+    install_requires=install_requires,
     include_package_data=True,
-    description="Rasa NLU a natural language parser for bots",
+    description="Rasa NLU addons a natural language parser for bots",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author='Gao Quan',

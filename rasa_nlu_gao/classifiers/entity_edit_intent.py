@@ -2,17 +2,16 @@ from __future__ import unicode_literals
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
+
 from builtins import map
 from typing import Any
 from typing import Dict
 from typing import Text
 
-from rasa_nlu_gao.components import Component
-from rasa_nlu_gao.training_data import Message
+from rasa.nlu.components import Component
+from rasa.nlu.training_data import Message
 
 class EntityEditIntent(Component):
-    name = "entity_edit_intent"
-
     provides = ["intent"]
 
     defaults = {

@@ -1,7 +1,0 @@
-rasanlu:
-  image: rasa/rasa_nlu:latest-spacy
-  ports:
-    - "5000:5000"
-  volumes:
-   - "/rasa-app-data/projects:/app/projects"
-   - "/rasa-app-data/logs:/app/logs"

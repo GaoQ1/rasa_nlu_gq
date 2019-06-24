@@ -1,6 +1,0 @@
-docker*
-docs
-.git*
-**/*.pyc
-**/__pycache__
-

@@ -11,7 +11,7 @@ import typing
 from typing import List, Text, Any, Optional, Dict
 
 from rasa_nlu_gao.classifiers import INTENT_RANKING_LENGTH
-from rasa_nlu_gao.components import Component
+from rasa.nlu.components import Component
 from multiprocessing import cpu_count
 from tensorflow.contrib import predictor as Pred
 import numpy as np
@@ -25,10 +25,10 @@ logger = logging.getLogger(__name__)
 
 if typing.TYPE_CHECKING:
     import tensorflow as tf
-    from rasa_nlu_gao.config import RasaNLUModelConfig
-    from rasa_nlu_gao.training_data import TrainingData
-    from rasa_nlu_gao.model import Metadata
-    from rasa_nlu_gao.training_data import Message
+    from rasa.nlu.config import RasaNLUModelConfig
+    from rasa.nlu.training_data import TrainingData
+    from rasa.nlu.model import Metadata
+    from rasa.nlu.training_data import Message
 
 try:
     import tensorflow as tf
@@ -38,8 +38,6 @@ except ImportError:
 
 class EmbeddingBertIntentEstimatorClassifier(Component):
     """Intent classifier using supervised bert embeddings."""
-
-    name = "intent_estimator_classifier_tensorflow_embedding_bert"
 
     provides = ["intent", "intent_ranking"]
 
@@ -306,7 +304,7 @@ class EmbeddingBertIntentEstimatorClassifier(Component):
         message.set("intent", intent, add_to_output=True)
         message.set("intent_ranking", intent_ranking, add_to_output=True)
 
-    def persist(self, model_dir):
+    def persist(self, file_name: Text, model_dir: Text):
         # type: (Text) -> Dict[Text, Any]
         """Persist this model into the passed directory.
         Return the metadata necessary to load the model again."""
@@ -325,14 +323,14 @@ class EmbeddingBertIntentEstimatorClassifier(Component):
 
         with io.open(os.path.join(
                 model_dir,
-                self.name + "_inv_intent_dict.pkl"), 'wb') as f:
+                file_name + "_inv_intent_dict.pkl"), 'wb') as f:
             pickle.dump(self.inv_intent_dict, f)
         with io.open(os.path.join(
                 model_dir,
-                self.name + "_encoded_all_intents.pkl"), 'wb') as f:
+                file_name + "_encoded_all_intents.pkl"), 'wb') as f:
             pickle.dump(self.encoded_all_intents, f)
 
-        return {"classifier_file": file_dir}
+        return {"file": file_name}
 
     @staticmethod
     def get_config_proto(component_config):
@@ -353,6 +351,7 @@ class EmbeddingBertIntentEstimatorClassifier(Component):
 
     @classmethod
     def load(cls,
+             meta,
              model_dir=None,  # type: Text
              model_metadata=None,  # type: Metadata
              cached_component=None,  # type: Optional[Component]
@@ -360,23 +359,22 @@ class EmbeddingBertIntentEstimatorClassifier(Component):
              ):
         # type: (...) -> EmbeddingBertIntentAdanetClassifier
 
-        meta = model_metadata.for_component(cls.name)
         config_proto = cls.get_config_proto(meta)
 
         print("bert model loaded")
 
-        if model_dir and meta.get("classifier_file"):
-            file_name = meta.get("classifier_file")
+        if model_dir and meta.get("file"):
+            file_name = meta.get("file")
             # tensorflow.contrib.predictor to load the model file which may has 10x speed up in predict time
             predict = Pred.from_saved_model(export_dir=os.path.join(model_dir,file_name),config=config_proto)
 
             with io.open(os.path.join(
                     model_dir,
-                    cls.name + "_inv_intent_dict.pkl"), 'rb') as f:
+                    file_name + "_inv_intent_dict.pkl"), 'rb') as f:
                 inv_intent_dict = pickle.load(f)
             with io.open(os.path.join(
                     model_dir,
-                    cls.name + "_encoded_all_intents.pkl"), 'rb') as f:
+                    file_name + "_encoded_all_intents.pkl"), 'rb') as f:
                 encoded_all_intents = pickle.load(f)
 
             return EmbeddingBertIntentEstimatorClassifier(

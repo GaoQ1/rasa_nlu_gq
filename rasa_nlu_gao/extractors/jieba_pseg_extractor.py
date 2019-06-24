@@ -12,22 +12,21 @@ from typing import Dict
 from typing import Optional
 from typing import Text
 
-from rasa_nlu_gao import utils
-from rasa_nlu_gao.extractors import EntityExtractor
-from rasa_nlu_gao.model import Metadata
-from rasa_nlu_gao.training_data import Message
-from rasa_nlu_gao.training_data import TrainingData
-from rasa_nlu_gao.utils import write_json_to_file
-
+from rasa.nlu import utils
+from rasa.nlu.extractors import EntityExtractor
+from rasa.nlu.model import Metadata
+from rasa.nlu.training_data import Message, TrainingData
+from rasa.nlu.utils import write_json_to_file
+import itertools
 
 
 class JiebaPsegExtractor(EntityExtractor):
-    name = "jieba_pseg_extractor"
 
     provides = ["entities"]
 
     defaults = {
-        "part_of_speech": ['nr'] # nr：人名，ns：地名，nt：机构名
+        # nr：人名，ns：地名，nt：机构名, m: numbers
+        "part_of_speech": ['nr']
     }
 
     def __init__(self, component_config=None):
@@ -35,18 +34,11 @@ class JiebaPsegExtractor(EntityExtractor):
 
         super(JiebaPsegExtractor, self).__init__(component_config)
 
-    def train(self, training_data, config, **kwargs):
-        # type: (TrainingData) -> None
-
-        self.component_config = config.for_component(self.name, self.defaults)
-
     def process(self, message, **kwargs):
         # type: (Message, **Any) -> None
-
         extracted = self.add_extractor_name(self.posseg_cut_examples(message))
-        
-        message.set("entities", extracted, add_to_output=True)
 
+        message.set("entities", extracted, add_to_output=True)
 
     def posseg_cut_examples(self, example):
         raw_entities = example.get("entities", [])
@@ -80,12 +72,11 @@ class JiebaPsegExtractor(EntityExtractor):
 
     @classmethod
     def load(cls,
+             meta: Dict[Text, Any],
              model_dir=None,  # type: Optional[Text]
              model_metadata=None,  # type: Optional[Metadata]
              cached_component=None,  # type: Optional[Component]
-             **kwargs  # type: **Any
+             **kwargs  # type:**Any
              ):
-
-        meta = model_metadata.for_component(cls.name)
 
         return cls(meta)

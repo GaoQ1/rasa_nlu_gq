@@ -12,21 +12,21 @@ And returning structured data like:
     - location : center
 ```
 
-## Intent of this project
-这个项目的目的和初衷，是由于官方的rasa nlu里面提供的components和models并不能满足实际需求。所以我自定义了一些components，并发布到Pypi上。可以通过`pip install rasa-nlu-gao`下载。后续会不断往里面填充和优化组件，也欢迎大家贡献。
+## Introduction
+原来的项目在分支0.2.7上，可自由切换。这个版本的修改是基于最新版本的rasa，将原来rasa_nlu_gao里面的component修改了下，并没有做新增。并且之前做法有些累赘，并不需要在rasa源码中修改。可以直接将原来的component当做addon加载，继承最新版本的rasa，可实时更新。
 
 ## New features
-目前新增的特性如下（请下载最新的rasa-nlu-gao版本）：
+目前新增的特性如下（请下载最新的rasa-nlu-gao版本）(edit at 2019.06.24)：
   - 新增了实体识别的模型，一个是bilstm+crf，一个是idcnn+crf膨胀卷积模型，对应的yml文件配置如下：
   ```
     language: "zh"
 
     pipeline:
-    - name: "tokenizer_jieba"
-    - name: "intent_featurizer_count_vectors"
+    - name: "JiebaTokenizer"
+    - name: "CountVectorsFeaturizer"
       token_pattern: "(?u)\b\w+\b"
-    - name: "intent_classifier_tensorflow_embedding"
-    - name: "ner_bilstm_crf"
+    - name: "EmbeddingIntentClassifier"
+    - name: "rasa_nlu_gao.extractors.bilstm_crf_entity_extractor.BilstmCRFEntityExtractor"
       lr: 0.001
       char_dim: 100
       lstm_dim: 100
@@ -46,76 +46,63 @@ And returning structured data like:
     language: "zh"
 
     pipeline:
-    - name: "tokenizer_jieba"
-    - name: "ner_crf"
-    - name: "jieba_pseg_extractor"
+    - name: "JiebaTokenizer"
+    - name: "CRFEntityExtractor"
+    - name: "rasa_nlu_gao.extractors.jieba_pseg_extractor.JiebaPsegExtractor"
       part_of_speech: ["nr", "ns", "nt"]
-    - name: "intent_featurizer_count_vectors"
+    - name: "CountVectorsFeaturizer"
       OOV_token: oov
       token_pattern: "(?u)\b\w+\b"
-    - name: "intent_classifier_tensorflow_embedding"
+    - name: "EmbeddingIntentClassifier"
   ```
   - 新增了根据实体反向修改意图，对应的文件配置如下：
   ```
     language: "zh"
 
     pipeline:
-    - name: "tokenizer_jieba"
-    - name: "ner_crf"
-    - name: "jieba_pseg_extractor"
-    - name: "intent_featurizer_count_vectors"
+    - name: "JiebaTokenizer"
+    - name: "CRFEntityExtractor"
+    - name: "JiebaPsegExtractor"
+    - name: "CountVectorsFeaturizer"
       OOV_token: oov
       token_pattern: '(?u)\b\w+\b'
-    - name: "intent_classifier_tensorflow_embedding"
-    - name: "entity_edit_intent"
+    - name: "EmbeddingIntentClassifier"
+    - name: "rasa_nlu_gao.classifiers.entity_edit_intent.EntityEditIntent"
       entity: ["nr"]
       intent: ["enter_data"]
       min_confidence: 0
-  ```
-  - 新增了word2vec提取词向量特征，对应的配置文件如下：
-  ```
-    language: "zh"
-
-    pipeline:
-    - name: "tokenizer_jieba"
-    - name: "intent_featurizer_wordvector"
-      vector: "data/vectors.txt"
-    - name: "intent_classifier_tensorflow_embedding"
-    - name: "ner_crf"
-    - name: "jieba_pseg_extractor"
   ```
   - 新增了bert模型提取词向量特征，对应的配置文件如下：
   ```
     language: "zh"
 
     pipeline:
-    - name: "tokenizer_jieba"
-    - name: "bert_vectors_featurizer"
-      ip: '172.16.10.46'
+    - name: "JiebaTokenizer"
+    - name: "rasa_nlu_gao.featurizers.bert_vectors_featurizer.BertVectorsFeaturizer"
+      ip: '127.0.0.1'
       port: 5555
       port_out: 5556
       show_server_config: True
       timeout: 10000
-    - name: "intent_classifier_tensorflow_embedding"
-    - name: "ner_crf"
-    - name: "jieba_pseg_extractor"
+    - name: "EmbeddingIntentClassifier"
+    - name: "CRFEntityExtractor"
   ```
-  - 新增了对CPU和GPU的利用率的配置，主要是`intent_classifier_tensorflow_embedding`和`ner_bilstm_crf`这两个使用到tensorflow的组件，配置如下（当然config_proto可以不配置，默认值会将资源全部利用）：
+  - 新增了对CPU和GPU的利用率的配置，主要是`EmbeddingIntentClassifier`和`ner_bilstm_crf`这两个使用到tensorflow的组件，配置如下（当然config_proto可以不配置，默认值会将资源全部利用）：
   ```
     language: "zh"
 
     pipeline:
-    - name: "tokenizer_jieba"
-    - name: "intent_featurizer_count_vectors"
+    - name: "JiebaTokenizer"
+    - name: "CountVectorsFeaturizer"
       token_pattern: '(?u)\b\w+\b'
-    - name: "intent_classifier_tensorflow_embedding"
+    - name: "EmbeddingIntentClassifier"
       config_proto: {
         "device_count": 4,
         "inter_op_parallelism_threads": 0,
         "intra_op_parallelism_threads": 0,
         "allow_growth": True
       }
-    - name: "ner_bilstm_crf"
+    - name: "rasa_nlu_gao.extractors.bilstm_crf_entity_extractor.BilstmCRFEntityExtractor"
       config_proto: {
         "device_count": 4,
         "inter_op_parallelism_threads": 0,
@@ -128,16 +115,15 @@ And returning structured data like:
     language: "zh"
 
     pipeline:
-    - name: "tokenizer_jieba"
-    - name: "bert_vectors_featurizer"
-      ip: '172.16.10.46'
+    - name: "JiebaTokenizer"
+    - name: "rasa_nlu_gao.featurizers.bert_vectors_featurizer.BertVectorsFeaturizer"
+      ip: '127.0.0.1'
       port: 5555
       port_out: 5556
       show_server_config: True
       timeout: 10000
-    - name: "intent_classifier_tensorflow_embedding_bert"
-    - name: "ner_crf"
-    - name: "jieba_pseg_extractor"
+    - name: "rasa_nlu_gao.classifiers.embedding_bert_intent_classifier.EmbeddingBertIntentClassifier"
+    - name: "CRFEntityExtractor"
   ```
   
    - 在基础词向量使用bert的情况下，后端的分类器使用tensorflow高级api完成，tf.estimator,tf.data,tf.example,tf.saved_model
@@ -146,32 +132,21 @@ And returning structured data like:
   language: "zh"
 
   pipeline:
-  - name: "tokenizer_jieba"
-  - name: "bert_vectors_featurizer"
+  - name: "JiebaTokenizer"
+  - name: "rasa_nlu_gao.featurizers.bert_vectors_featurizer.BertVectorsFeaturizer"
     ip: '127.0.0.1'
     port: 5555
     port_out: 5556
     show_server_config: True
     timeout: 10000
-  - name: "intent_estimator_classifier_tensorflow_embedding_bert"
-  - name: "nlp_spacy"
-  - name: "ner_crf"
+  - name: "rasa_nlu_gao.classifiers.embedding_bert_intent_estimator_classifier.EmbeddingBertIntentEstimatorClassifier"
+  - name: "SpacyNLP"
+  - name: "CRFEntityExtractor"
   ```
 
 ## Quick Install
 ```
 pip install rasa-nlu-gao
-```
-
-## 🤖 Running of the bot
-To train the NLU model:
-```
-python3 -m rasa_nlu_gao.train -c sample_configs/config_embedding_bilstm.yml --data data/examples/rasa/rasa_dataset_training.json --path models
-```
-
-To run the NLU model:
-```
-python3 -m rasa_nlu_gao.server -c sample_configs/config_embedding_bilstm.yml -P 8000 --path models
 ```
 
 ## Some Examples

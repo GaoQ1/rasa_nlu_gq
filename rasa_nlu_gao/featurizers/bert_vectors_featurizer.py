@@ -8,12 +8,12 @@ import os
 import re
 from typing import Any, Dict, List, Optional, Text
 
-from rasa_nlu_gao import utils
-from rasa_nlu_gao.featurizers import Featurizer
-from rasa_nlu_gao.training_data import Message
-from rasa_nlu_gao.components import Component
-from rasa_nlu_gao.model import Metadata
-from bert_serving.client import BertClient
+from rasa.nlu import utils
+from rasa.nlu.featurizers import Featurizer
+from rasa.nlu.training_data import Message
+from rasa.nlu.components import Component
+from rasa.nlu.model import Metadata
+from bert_serving.client import ConcurrentBertClient
 
 import numpy as np
 from tqdm import tqdm
@@ -22,8 +22,6 @@ logger = logging.getLogger(__name__)
 
 
 class BertVectorsFeaturizer(Featurizer):
-    name = "bert_vectors_featurizer"
-
     provides = ["text_features"]
 
     defaults = {
@@ -52,7 +50,7 @@ class BertVectorsFeaturizer(Featurizer):
         check_version = self.component_config['check_version']
         timeout = self.component_config['timeout']
         identity = self.component_config['identity']
-        self.bc = BertClient(
+        self.bc = ConcurrentBertClient(
             ip=ip,
             port=int(port),
             port_out=int(port_out),
@@ -104,12 +102,11 @@ class BertVectorsFeaturizer(Featurizer):
 
     @classmethod
     def load(cls,
+             meta,
              model_dir=None,  # type: Text
              model_metadata=None,  # type: Metadata
              cached_component=None,  # type: Optional[Component]
              **kwargs  # type: **Any
              ):
-
-        meta = model_metadata.for_component(cls.name)
 
         return cls(meta)
