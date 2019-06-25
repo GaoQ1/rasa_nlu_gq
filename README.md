@@ -151,3 +151,7 @@ pip install rasa-nlu-gao
 
 ## Some Examples
 具体的例子请看[rasa_chatbot_cn](https://github.com/GaoQ1/rasa_chatbot_cn)
+
+## TODO
+ - Add more awesome and userful components, like intent classifier and slot extract, or combime this two tickets.
+ - Keep updating need your contribute
