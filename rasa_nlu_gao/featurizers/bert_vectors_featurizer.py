@@ -61,11 +61,6 @@ class BertVectorsFeaturizer(Featurizer):
             identity=identity
         )
 
-    @classmethod
-    def create(cls, cfg):
-        component_conf = cfg.for_component(cls.name, cls.defaults)
-        return BertVectorsFeaturizer(component_conf)
-
     def _get_message_text(self, message):
         all_tokens = []
 
