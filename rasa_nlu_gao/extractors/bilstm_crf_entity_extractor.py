@@ -27,7 +27,7 @@ from rasa_nlu_gao.utils.bilstm_utils import \
     char_mapping, tag_mapping, prepare_dataset, BatchManager, iob_iobes, \
     iob2, save_model, create_model, input_from_line
 
-from rasa_nlu_gao.models.bilstm_model import Model
+from rasa_nlu_gao.models.model import Model
 from multiprocessing import cpu_count
 import jieba
 
