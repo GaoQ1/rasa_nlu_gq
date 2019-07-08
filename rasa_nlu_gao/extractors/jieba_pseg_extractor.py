@@ -19,20 +19,25 @@ from rasa.nlu.training_data import Message, TrainingData
 from rasa.nlu.utils import write_json_to_file
 import itertools
 
+import jieba
+import jieba.posseg as pseg
 
 class JiebaPsegExtractor(EntityExtractor):
-
     provides = ["entities"]
 
     defaults = {
         # nr：人名，ns：地名，nt：机构名, m: numbers
-        "part_of_speech": ['nr']
+        "part_of_speech": ['nr'],
+        "dictionary_path": None
     }
 
     def __init__(self, component_config=None):
         # type: (Optional[Dict[Text, Text]]) -> None
-
         super(JiebaPsegExtractor, self).__init__(component_config)
+        dictionary_path = self.component_config.get('dictionary_path')
+
+        if dictionary_path is not None:
+            jieba.load_userdict(dictionary_path)
 
     def process(self, message, **kwargs):
         # type: (Message, **Any) -> None
@@ -59,10 +64,6 @@ class JiebaPsegExtractor(EntityExtractor):
     @staticmethod
     def posseg(text):
         # type: (Text) -> List[Token]
-
-        import jieba
-        import jieba.posseg as pseg
-
         result = []
         for (word, start, end) in jieba.tokenize(text):
             pseg_data = [(w, f) for (w, f) in pseg.cut(word)]
