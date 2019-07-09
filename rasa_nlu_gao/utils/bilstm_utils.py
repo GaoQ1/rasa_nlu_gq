@@ -4,10 +4,11 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
-import jieba
+
 import math
 import random
 import tensorflow as tf
+
 
 def char_mapping(sentences, lower):
     """
@@ -66,13 +67,13 @@ def tag_mapping(sentences):
     return tag_to_id, id_to_tag
 
 
-def prepare_dataset(sentences, char_to_id, tag_to_id, lower=False, train=True):
+def prepare_dataset(sentences, char_to_id, tag_to_id, seg, lower=False, train=True):
     """
     Prepare the dataset. Return a list of lists of dictionaries containing:
         - word indexes
         - word char indexes
         - tag indexes
-          
+
     Args:
       sentences: 传入的句子（字符与对应的tag标记）
       char_to_id: 字符与位置的映射关系
@@ -80,8 +81,8 @@ def prepare_dataset(sentences, char_to_id, tag_to_id, lower=False, train=True):
 
     Return:
       string: 训练数据的句子
-      chars:  句子中每个字符在字典中的位置  
-      segs:   jieba分词后句子每个词语的长度, 0 表示单个字 1表示词语的开头 2表示词语的中间词 3表示词语的结尾
+      chars:  句子中每个字符在字典中的位置
+      segs:   pkuseg分词后句子每个词语的长度, 0 表示单个字 1表示词语的开头 2表示词语的中间词 3表示词语的结尾
       tags:   句子中对应的tag标记在字典中的位置
     """
 
@@ -94,29 +95,28 @@ def prepare_dataset(sentences, char_to_id, tag_to_id, lower=False, train=True):
         string = [w[0] for w in s]
         chars = [char_to_id[f(w) if f(w) in char_to_id else '<UNK>']
                  for w in string]
-        segs = get_seg_features("".join(string))
+        segs = get_seg_features("".join(string), seg)
         if train:
             tags = [tag_to_id[w[1]] for w in s]
         else:
             tags = [none_index for _ in chars]
-       
         data.append([string, chars, segs, tags])
 
     return data
 
 
-def get_seg_features(string):
+def get_seg_features(string, seg):
     """
-    Segment text with jieba
+    Segment text with pkuseg
     features are represented in bies format
     s donates single word
-    将输入句子进行jieba分词，然后获取每个词的长度特征
+    将输入句子进行pkuseg分词，然后获取每个词的长度特征
     0 代表为单字，1代表词的开头，2代表词的中间部分，3代表词的结尾
     例如，string=高血糖和血压 高血糖=[1,2,3] 和=[0] 高血压=[1,3] seg_inputs=[1,2,3,0,1,3]
     """
     seg_feature = []
 
-    for word in jieba.cut(string):
+    for word in seg.cut(string):
         if len(word) == 1:
             seg_feature.append(0)
         else:
@@ -124,6 +124,7 @@ def get_seg_features(string):
             tmp[0] = 1
             tmp[-1] = 3
             seg_feature.extend(tmp)
+
     return seg_feature
 
 
@@ -169,12 +170,13 @@ class BatchManager(object):
 
 def result_to_json(string, tags):
     item = {
-        "string": string, 
+        "string": string,
         "entities": []
     }
     entity_name = ""
     entity_start = 0
     idx = 0
+
     for char, tag in zip(string, tags):
         if tag[0] == "S":
             item["entities"].append(
@@ -187,7 +189,10 @@ def result_to_json(string, tags):
         elif tag[0] == "E":
             entity_name += char
             item["entities"].append(
-                {"value": entity_name, "start": entity_start, "end": idx + 1, "entity": tag[2:]})
+                {"value": entity_name,
+                 "start": entity_start,
+                 "end": idx + 1,
+                 "entity": tag[2:]})
             entity_name = ""
         else:
             entity_name = ""
@@ -219,6 +224,7 @@ def iob_iobes(tags):
         else:
             raise Exception('Invalid IOB format!')
     return new_tags
+
 
 def iobes_iob(tags):
     """
@@ -273,7 +279,7 @@ def create_model(session, Model_class, config, logger):
     return model
 
 
-def input_from_line(line, char_to_id):
+def input_from_line(line, char_to_id, seg):
     """
     Take sentence data and return an input for
     the training or the evaluation function.
@@ -285,16 +291,20 @@ def input_from_line(line, char_to_id):
     inputs.append([line])
     line.replace(" ", "$")
     # 未登录词按<UNK>字符处理
-    inputs.append([[char_to_id[char] if char in char_to_id else char_to_id["<UNK>"]
-                    for char in line]])
-    inputs.append([get_seg_features(line)])
+    inputs.append(
+        [[char_to_id[char]
+          if char in char_to_id else char_to_id["<UNK>"] for char in line
+          ]]
+    )
+
+    inputs.append([get_seg_features(line, seg)])
     inputs.append([[]])
     return inputs
 
 
 def full_to_half(s):
     """
-    Convert full-width character to half-width one 
+    Convert full-width character to half-width one
     将全角字符转换为半角字符
     """
     n = []
