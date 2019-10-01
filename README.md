@@ -144,6 +144,18 @@ And returning structured data like:
   - name: "CRFEntityExtractor"
   ```
 
+  - [rasa-nlu的究极形态](https://www.jianshu.com/p/1aeef346fc4d)，对应的配置文件如下(edit at 2019.10.01)：
+  ```
+  language: zh
+
+  pipeline:
+  - name: "rasa_nlu_gao.classifiers.kashgari_intent_classifier.KashgariIntentClassifier"
+    bert_model_path: "/path/to/your/bert_pre_model"
+
+  - name: "rasa_nlu_gao.extractors.kashgari_entity_extractor.KashgariEntityExtractor"
+    bert_model_path: "/path/to/your/bert_pre_model"
+  ```
+
 ## Quick Install
 ```
 pip install rasa-nlu-gao
@@ -151,7 +163,3 @@ pip install rasa-nlu-gao
 
 ## Some Examples
 具体的例子请看[rasa_chatbot_cn](https://github.com/GaoQ1/rasa_chatbot_cn)
-
-## TODO
- - Add more awesome and userful components, like intent classify and slot extract, or combime this two tickets.
- - Keep updating need your contribute

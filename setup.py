@@ -17,7 +17,9 @@ with io.open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
 install_requires = [
     "rasa~=1.1.3",
     "jieba~=0.39",
-    "bert-serving-client==1.8.9"
+    "bert-serving-client==1.8.9",
+    "tensorflow==1.14.0",
+    "kashgari-tf~=0.5.3"
 ]
 
 setup(
@@ -45,7 +47,3 @@ setup(
         'Source': 'https://github.com/GaoQ1/rasa_nlu_gq',
     },
 )
-
-print("\nWelcome to Rasa NLU!")
-print("If any questions please visit documentation "
-      "page https://nlu.rasa.com")
