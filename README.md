@@ -144,7 +144,7 @@ And returning structured data like:
   - name: "CRFEntityExtractor"
   ```
 
-  - [rasa-nlu的究极形态](https://www.jianshu.com/p/1aeef346fc4d)，对应的配置文件如下(edit at 2019.10.01)：
+  - [rasa-nlu的究极形态](https://www.jianshu.com/p/553e37ffbac0)，对应的配置文件如下(edit at 2019.10.01)：
   ```
   language: zh
 
