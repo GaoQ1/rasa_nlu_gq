@@ -30,7 +30,8 @@ class KashgariEntityExtractor(EntityExtractor):
         "validation_split": 0.2,
         "patience": 5,
         "factor": 0.5, # factor of reduce learning late everytime
-        "verbose": 1
+        "verbose": 1,
+        "use_cudnn_cell": False
     }
 
     def __init__(self,
@@ -42,6 +43,9 @@ class KashgariEntityExtractor(EntityExtractor):
         sequence_length = self.component_config.get('sequence_length')
         layer_nums = self.component_config.get('layer_nums')
         trainable = self.component_config.get('trainable')
+        use_cudnn_cell = self.component_config.get('use_cudnn_cell')
+
+        kashgari.config.use_cudnn_cell = use_cudnn_cell
 
         self.labeling_model = self.component_config.get('labeling_model')
 
