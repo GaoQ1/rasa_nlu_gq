@@ -58,7 +58,7 @@ class KashgariEntityExtractor(EntityExtractor):
         self.model = model
 
 
-    async def train(self, training_data, cfg, **kwargs):
+    def train(self, training_data, cfg, **kwargs):
         labeling_model = eval("labeling." + self.labeling_model)
 
         epochs = self.component_config.get('epochs')
@@ -127,7 +127,7 @@ class KashgariEntityExtractor(EntityExtractor):
 
         return list(text), bilou
 
-    async def process(self, message, **kwargs):
+    def process(self, message, **kwargs):
         extracted = self.add_extractor_name(self.extract_entities(message))
 
         message.set("entities",

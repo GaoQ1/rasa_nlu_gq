@@ -61,7 +61,7 @@ class KashgariIntentClassifier(Component):
 
         self.model = model
 
-    async def train(self, training_data, cfg, **kwargs):
+    def train(self, training_data, cfg, **kwargs):
         classifier_model = eval("clf." + self.classifier_model)
 
         epochs = self.component_config.get('epochs')
@@ -107,7 +107,7 @@ class KashgariIntentClassifier(Component):
             callbacks=[checkpoint, early_stopping, reduce_lr]
         )
 
-    async def process(self, message, **kwargs):
+    def process(self, message, **kwargs):
         intent_ranks = self.get_intent_score(message)
         intent = intent_ranks[0]
 
