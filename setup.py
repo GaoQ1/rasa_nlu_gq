@@ -18,7 +18,7 @@ install_requires = [
     "rasa~=1.1.3",
     "jieba~=0.39",
     "bert-serving-client==1.8.9",
-    "tensorflow==1.14.0",
+    "tensorflow==1.15.0",
     "kashgari-tf~=0.5.3"
 ]
 
