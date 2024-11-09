@@ -158,3 +158,4 @@ pip install rasa-nlu-gao
 [liveportraitweb](https://www.liveportraitweb.com/)
 [novelling](https://www.novelling.com/)
 [whatnovel](https://www.whatnovel.com/)
+[omniparser](https://www.omniparser.net/)
