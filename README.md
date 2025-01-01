@@ -163,3 +163,4 @@ pip install rasa-nlu-gao
 [Comprimirmp4](https://www.comprimirmp4.com/)
 [Rewritifyai](https://www.rewritifyai.com/)
 [Sprunki Phase 5](https://www.sprunkiphase5.net/)
+[MMAudio](https://www.mmaudio.pro/)
