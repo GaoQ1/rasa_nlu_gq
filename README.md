@@ -169,3 +169,4 @@ pip install rasa-nlu-gao
 [Flexvalorant](https://www.flexvalorant.com)
 [Rednote](https://www.rednote.pro/)
 [RednoteApp](https://www.rednoteapp.pro/)
+[RednoteUS](https://www.rednote.us/)
