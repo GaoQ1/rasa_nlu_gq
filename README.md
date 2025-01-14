@@ -170,3 +170,4 @@ pip install rasa-nlu-gao
 [Rednote](https://www.rednote.pro/)
 [RednoteApp](https://www.rednoteapp.pro/)
 [RednoteUS](https://www.rednote.us/)
+[RednoteLive](https://www.rednote.live/)
