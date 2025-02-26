@@ -172,3 +172,4 @@ pip install rasa-nlu-gao
 [Deepseek Image](https://deepseekimage.net/)
 [10minutes.one](https://10minutes.one/)
 [Career Dreamer](https://www.careerdreamer.net/)
+[Wanx2.1](https://www.wanx.run/)
