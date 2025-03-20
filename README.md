@@ -174,3 +174,4 @@ pip install rasa-nlu-gao
 [Career Dreamer](https://www.careerdreamer.net/)
 [Wanx2.1](https://www.wanx.run/)
 [Image To Video AI](https://imagetovideoai.space/)
+[AudioX](https://audiox.app/)
