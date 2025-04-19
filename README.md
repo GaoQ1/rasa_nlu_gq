@@ -177,3 +177,4 @@ pip install rasa-nlu-gao
 [AudioX](https://audiox.app/)
 [Image To Video AI](https://imagetovideoai.dev/)
 [AI Doll Generator](https://ai-doll-generator.com)
+[FramePack](https://frame-pack.net/)
