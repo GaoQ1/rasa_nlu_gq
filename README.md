@@ -178,3 +178,4 @@ pip install rasa-nlu-gao
 [Image To Video AI](https://imagetovideoai.dev/)
 [AI Doll Generator](https://ai-doll-generator.com)
 [FramePack](https://frame-pack.net/)
+[mRNA](https://mrna.app/)
