@@ -179,3 +179,5 @@ pip install rasa-nlu-gao
 [AI Doll Generator](https://ai-doll-generator.com)
 [FramePack](https://frame-pack.net/)
 [mRNA](https://mrna.app/)
+[Lyria 2](https://audiox.app/lyria2)
+[Sound Effects](https://audiox.app/sound-effects)
