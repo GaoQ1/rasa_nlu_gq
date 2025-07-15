@@ -181,3 +181,4 @@ pip install rasa-nlu-gao
 [mRNA](https://mrna.app/)
 [Lyria 2](https://audiox.app/lyria2)
 [Sound Effects](https://audiox.app/sound-effects)
+[Grok Companion](https://grokcompanion.org/)
