@@ -182,3 +182,4 @@ pip install rasa-nlu-gao
 [Lyria 2](https://audiox.app/lyria2)
 [Sound Effects](https://audiox.app/sound-effects)
 [Grok Companion](https://grokcompanion.org/)
+[Voice Cloning](https://audiox.app/ai-voice-generator/voice-cloning)
