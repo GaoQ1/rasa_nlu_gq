@@ -183,3 +183,4 @@ pip install rasa-nlu-gao
 [Sound Effects](https://audiox.app/sound-effects)
 [Grok Companion](https://grokcompanion.org/)
 [Voice Cloning](https://audiox.app/ai-voice-generator/voice-cloning)
+[Qwen TTS](https://qwen-tts.com/)
