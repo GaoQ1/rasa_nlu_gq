@@ -184,3 +184,4 @@ pip install rasa-nlu-gao
 [Grok Companion](https://grokcompanion.org/)
 [Voice Cloning](https://audiox.app/ai-voice-generator/voice-cloning)
 [Qwen TTS](https://qwen-tts.com/)
+[Eleven Music](https://eleven-music.net/)
