@@ -186,3 +186,4 @@ pip install rasa-nlu-gao
 [Qwen TTS](https://qwen-tts.com/)
 [Eleven Music](https://eleven-music.net/)
 [Clippy Profile Pic](https://clippyprofilepic.com/)
+[Interactive Video Generator](https://ivgen.org/)
