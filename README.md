@@ -187,3 +187,4 @@ pip install rasa-nlu-gao
 [Eleven Music](https://eleven-music.net/)
 [Clippy Profile Pic](https://clippyprofilepic.com/)
 [Interactive Video Generator](https://ivgen.org/)
+[WebNovel AI](https://webnovelai.io/)
