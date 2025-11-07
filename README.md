@@ -188,3 +188,4 @@ pip install rasa-nlu-gao
 [Clippy Profile Pic](https://clippyprofilepic.com/)
 [Interactive Video Generator](https://ivgen.org/)
 [WebNovel AI](https://webnovelai.io/)
+[AI Script Generator](https://aiscriptgenerator.net/)
