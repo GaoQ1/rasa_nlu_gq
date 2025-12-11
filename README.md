@@ -189,3 +189,4 @@ pip install rasa-nlu-gao
 [Interactive Video Generator](https://ivgen.org/)
 [WebNovel AI](https://webnovelai.io/)
 [AI Script Generator](https://aiscriptgenerator.net/)
+[Nano Banana](https://audiox.app/models/nano-banana)
