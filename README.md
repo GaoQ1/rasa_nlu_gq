@@ -190,3 +190,5 @@ pip install rasa-nlu-gao
 [WebNovel AI](https://webnovelai.io/)
 [AI Script Generator](https://aiscriptgenerator.net/)
 [Nano Banana](https://audiox.app/models/nano-banana)
+[Wan2.5](https://audiox.app/models/wan2-5)
+[Nano Banana Pro](https://audiox.app/models/nanobananapro)
