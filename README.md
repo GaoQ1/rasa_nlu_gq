@@ -192,3 +192,4 @@ pip install rasa-nlu-gao
 [Nano Banana](https://audiox.app/models/nano-banana)
 [Wan2.5](https://audiox.app/models/wan2-5)
 [Nano Banana Pro](https://audiox.app/models/nanobananapro)
+[GPT Image 1.5](https://audiox.app/models/gpt-image)
