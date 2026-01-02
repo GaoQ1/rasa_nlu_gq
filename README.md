@@ -194,3 +194,5 @@ pip install rasa-nlu-gao
 [Nano Banana Pro](https://audiox.app/models/nanobananapro)
 [GPT Image 1.5](https://audiox.app/models/gpt-image)
 [Video Any](https://videoany.io/)
+[Easy Gen](https://easygen.pro/)
+[Nano Prompt](https://videoany.io/prompt)
