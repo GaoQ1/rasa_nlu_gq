@@ -196,3 +196,4 @@ pip install rasa-nlu-gao
 [Video Any](https://videoany.io/)
 [Easy Gen](https://easygen.pro/)
 [Nano Prompt](https://videoany.io/prompt)
+[GLM Image](https://videoany.io/models/glm-image)
