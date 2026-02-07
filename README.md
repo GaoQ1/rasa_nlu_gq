@@ -200,3 +200,4 @@ pip install rasa-nlu-gao
 [Lip Sync](https://videoany.io/lip-sync)
 [AI Avatar](https://videoany.io/tools/ai-avatar)
 [Video Dubbing](https://videoany.io/video-dubbing)
+[Deepseek Video](https://deepseekvideo.app/)
