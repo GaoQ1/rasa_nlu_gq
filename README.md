@@ -201,3 +201,5 @@ pip install rasa-nlu-gao
 [AI Avatar](https://videoany.io/tools/ai-avatar)
 [Video Dubbing](https://videoany.io/video-dubbing)
 [Deepseek Video](https://deepseekvideo.app/)
+[Seedance 2.0](https://videoany.io/models/seedance-2-0)
+[Seedance 2.0](http://seeddance.app/)
