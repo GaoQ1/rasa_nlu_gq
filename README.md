@@ -167,3 +167,4 @@ pip install rasa-nlu-gao
 [Seedance 2.0](http://seeddance.app/)
 [Seedance Image To Video](https://seeddance.app/image-to-video)
 [DeepFake AI](https://deepfakeai.pro/)
+[VeoNano](https://veonano.com/)
