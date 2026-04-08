@@ -169,3 +169,4 @@ pip install rasa-nlu-gao
 [DeepFake AI](https://deepfakeai.pro/)
 [VeoNano](https://veonano.com/)
 [Veo4](https://veo4ai.im/)
+[Happy Horse](https://openhappyhorse.io/)
