@@ -172,3 +172,4 @@ pip install rasa-nlu-gao
 [Face Swap AI](https://bestfaceswap.io/)
 [AI Video Generator Belgie](https://videoany.be/)
 [AI bez cenzury](https://videoany.pl/)
+[VideoAny Sweden](http://videoany.se/)
